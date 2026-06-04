@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const authRoutes = require('./auth');
+const ejercicioRoutes = require('./ejercicio');
 
 // Ruta de prueba
 router.get('/health', (req, res) => {
@@ -14,6 +15,9 @@ router.get('/health', (req, res) => {
 
 // Rutas de autenticación
 router.use('/auth', authRoutes);
+
+// Rutas de ejercicios
+router.use('/ejercicios', ejercicioRoutes);
 
 // Ruta de ejemplo
 router.get('/test', (req, res) => {
