@@ -22,8 +22,12 @@ const sequelize = new Sequelize(
 const UserModel = require('./User');
 const User = UserModel(sequelize);
 
+const EjercicioModel = require('./ejercicio.model');
+const Ejercicio = EjercicioModel(sequelize);
+
 module.exports = {
   sequelize,
   Sequelize,
-  User
+  User,
+  Ejercicio
 };
