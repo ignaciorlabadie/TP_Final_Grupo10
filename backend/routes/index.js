@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const authRoutes = require('./auth');
 const ejercicioRoutes = require('./ejercicio');
+const rutinaRoutes = require('./rutina');
 
 // Ruta de prueba
 router.get('/health', (req, res) => {
@@ -18,6 +19,9 @@ router.use('/auth', authRoutes);
 
 // Rutas de ejercicios
 router.use('/ejercicios', ejercicioRoutes);
+
+// Rutas de rutinas
+router.use('/rutinas', rutinaRoutes);
 
 // Ruta de ejemplo
 router.get('/test', (req, res) => {
