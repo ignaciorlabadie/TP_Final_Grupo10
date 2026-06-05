@@ -3,8 +3,8 @@ Proyecto: Seguimiento de Ejercicios
 Descripción: Aplicación básica para registrar rutinas de ejercicio y progreso.
 
 Funcionalidades Principales:
-1- Crear rutinas de ejercicio
+1- Crear rutinas de ejercicio (Completado)
 2- Registrar entrenamientos realizados
 3- Seguir progreso en ejercicios específicos
-4- Categorizar ejercicios por tipo
+4- Categorizar ejercicios por tipo (Completado, los ejercicios tienen tipo)
 5- Ver estadísticas básicas de entrenamiento
