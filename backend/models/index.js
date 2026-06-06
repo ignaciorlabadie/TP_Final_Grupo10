@@ -31,6 +31,12 @@ const Rutina = RutinaModel(sequelize);
 const RutinaEjercicioModel = require('./rutina_ejercicio.model');
 const RutinaEjercicio = RutinaEjercicioModel(sequelize);
 
+const EntrenamientoModel = require('./entrenamiento.model');
+const Entrenamiento = EntrenamientoModel(sequelize);
+
+const EntrenamientoEjercicioModel = require('./entrenamiento_ejercicio.model');
+const EntrenamientoEjercicio = EntrenamientoEjercicioModel(sequelize);
+
 // Asociaciones
 Rutina.belongsToMany(Ejercicio, {
   through: RutinaEjercicio,
@@ -49,6 +55,16 @@ RutinaEjercicio.belongsTo(Rutina, { foreignKey: 'rutina_id' });
 
 RutinaEjercicio.belongsTo(Ejercicio, { foreignKey: 'ejercicio_id' });
 
+// Asociaciones de Entrenamiento
+Entrenamiento.belongsTo(Rutina, { foreignKey: 'rutina_id' });
+Rutina.hasMany(Entrenamiento, { foreignKey: 'rutina_id' });
+
+Entrenamiento.hasMany(EntrenamientoEjercicio, { foreignKey: 'entrenamiento_id' });
+EntrenamientoEjercicio.belongsTo(Entrenamiento, { foreignKey: 'entrenamiento_id' });
+
+EntrenamientoEjercicio.belongsTo(Ejercicio, { foreignKey: 'ejercicio_id' });
+Ejercicio.hasMany(EntrenamientoEjercicio, { foreignKey: 'ejercicio_id' });
+
 module.exports = {
   sequelize,
   Sequelize,
@@ -56,4 +72,6 @@ module.exports = {
   Ejercicio,
   Rutina,
   RutinaEjercicio,
+  Entrenamiento,
+  EntrenamientoEjercicio,
 };
