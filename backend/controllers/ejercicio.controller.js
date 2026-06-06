@@ -1,4 +1,4 @@
-const { Ejercicio } = require('../models');
+const { Ejercicio, EntrenamientoEjercicio, Entrenamiento } = require('../models');
 
 const getAllEjercicios = async (req, res, next) => {
   try {
@@ -82,4 +82,38 @@ const deleteEjercicio = async (req, res, next) => {
   }
 };
 
-module.exports = { getAllEjercicios, getEjercicioById, postNewEjercicio, updateEjercicio, deleteEjercicio };
+const getProgresoEjercicio = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const ejercicio = await Ejercicio.findByPk(Number(id));
+    if (!ejercicio) {
+      return res.status(404).json({ msg: `No se encontró el ejercicio con el id ${id}` });
+    }
+
+    const progreso = await EntrenamientoEjercicio.findAll({
+      where: { ejercicio_id: id },
+      attributes: ['series_realizadas', 'repeticiones_realizadas', 'peso_usado'],
+      include: [
+        {
+          model: Entrenamiento,
+          attributes: ['fecha', 'notas'],
+        },
+      ],
+      order: [[Entrenamiento, 'fecha', 'DESC']],
+    });
+
+    if (progreso.length === 0) {
+      return res.status(404).json({ msg: `No hay entrenamientos registrados para el ejercicio con id ${id}` });
+    }
+
+    return res.status(200).json({
+      ejercicio,
+      progreso,
+    });
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
+
+module.exports = { getAllEjercicios, getEjercicioById, postNewEjercicio, updateEjercicio, deleteEjercicio, getProgresoEjercicio };
