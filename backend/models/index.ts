@@ -1,9 +1,4 @@
 import { Sequelize } from "sequelize";
-import { EjercicioModel } from './ejercicio.model'
-import { RutinaModel } from './rutina.model'
-import { RutinaEjercicioModel } from './rutina_ejercicio.model'
-import { EntrenamientoModel } from './entrenamiento.model'
-import { EntrenamientoEjercicioModel } from './entrenamiento_ejercicio.model'
 const config = require('../config/config');
 
 const env = process.env.NODE_ENV || 'development'
@@ -35,4 +30,4 @@ const verificarConexion = async (): Promise<void> => {
 
 verificarConexion()
 
-export { sequelize, Sequelize, EjercicioModel, RutinaModel, RutinaEjercicioModel, EntrenamientoModel, EntrenamientoEjercicioModel }
+export { sequelize, Sequelize }
