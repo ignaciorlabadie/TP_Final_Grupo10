@@ -1,9 +1,23 @@
-import { DataTypes, Sequelize } from 'sequelize';
-import { EntrenamientoEjercicioInstance, EntrenamientoEjercicioCreationAttributes } from './interfaces/entrenamiento_ejercicio.interface';
+import { DataTypes, Model, Sequelize } from 'sequelize';
+import { InterfaceEntrenamientoEjercicio, EntrenamientoEjercicioCreationAttributes } from './interfaces/entrenamiento_ejercicio.interface';
+
+class EntrenamientoEjercicio
+  extends Model<InterfaceEntrenamientoEjercicio, EntrenamientoEjercicioCreationAttributes>
+  implements InterfaceEntrenamientoEjercicio
+{
+  public id!: number;
+  public entrenamiento_id!: number;
+  public ejercicio_id!: number;
+  public series_realizadas?: number;
+  public repeticiones_realizadas?: number;
+  public peso_usado?: number;
+
+  public readonly createdAt!: Date;
+  public readonly updatedAt!: Date;
+}
 
 export default (sequelize: Sequelize) => {
-  const EntrenamientoEjercicio = sequelize.define<EntrenamientoEjercicioInstance, EntrenamientoEjercicioCreationAttributes>(
-    'EntrenamientoEjercicio',
+  EntrenamientoEjercicio.init(
     {
       id: {
         type: DataTypes.INTEGER,
@@ -41,7 +55,9 @@ export default (sequelize: Sequelize) => {
       },
     },
     {
+      sequelize,
       tableName: 'entrenamiento_ejercicios',
+      modelName: 'EntrenamientoEjercicio',
       timestamps: true,
     }
   );

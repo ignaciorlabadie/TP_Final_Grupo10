@@ -1,9 +1,21 @@
-import { DataTypes, Sequelize } from 'sequelize';
-import { RutinaInstance, RutinaCreationAttributes } from './interfaces/rutina.interface';
+import { DataTypes, Model, Sequelize } from 'sequelize';
+import { InterfaceRutina, RutinaCreationAttributes } from './interfaces/rutina.interface';
+
+class Rutina
+  extends Model<InterfaceRutina, RutinaCreationAttributes>
+  implements InterfaceRutina
+{
+  public id!: number;
+  public nombre!: string;
+  public descripcion?: string;
+  public duracion_minutos?: number;
+
+  public readonly createdAt!: Date;
+  public readonly updatedAt!: Date;
+}
 
 export default (sequelize: Sequelize) => {
-  const Rutina = sequelize.define<RutinaInstance, RutinaCreationAttributes>(
-    'Rutina',
+  Rutina.init(
     {
       id: {
         type: DataTypes.INTEGER,
@@ -31,7 +43,9 @@ export default (sequelize: Sequelize) => {
       },
     },
     {
+      sequelize,
       tableName: 'rutinas',
+      modelName: 'Rutina',
       timestamps: true,
     }
   );

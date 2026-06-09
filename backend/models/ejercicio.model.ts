@@ -1,9 +1,20 @@
-import { DataTypes, Sequelize } from 'sequelize';
-import { EjercicioInstance, EjercicioCreationAttributes } from './interfaces/ejercicio.interface';
+import { DataTypes, Model, Optional, Sequelize } from 'sequelize';
+import { InterfaceEjercicio, EjercicioCreationAttributes } from './interfaces/ejercicio.interface';
+
+class Ejercicio
+  extends Model<InterfaceEjercicio, EjercicioCreationAttributes>
+  implements InterfaceEjercicio
+{
+  public id!: number;
+  public nombre!: string;
+  public tipo!: string;
+
+  public readonly createdAt!: Date;
+  public readonly updatedAt!: Date;
+}
 
 export default (sequelize: Sequelize) => {
-  const Ejercicio = sequelize.define<EjercicioInstance, EjercicioCreationAttributes>(
-    'Ejercicio',
+  Ejercicio.init(
     {
       id: {
         type: DataTypes.INTEGER,
@@ -11,7 +22,7 @@ export default (sequelize: Sequelize) => {
         autoIncrement: true,
       },
       nombre: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(100),
         allowNull: false,
         validate: {
           notEmpty: true,
@@ -27,7 +38,9 @@ export default (sequelize: Sequelize) => {
       },
     },
     {
+      sequelize,
       tableName: 'ejercicios',
+      modelName: 'Ejercicio',
       timestamps: true,
     }
   );

@@ -1,9 +1,22 @@
-import { DataTypes, Sequelize } from 'sequelize';
-import { EntrenamientoInstance, EntrenamientoCreationAttributes } from './interfaces/entrenamiento.interface';
+import { DataTypes, Model, Sequelize } from 'sequelize';
+import { InterfaceEntrenamiento, EntrenamientoCreationAttributes } from './interfaces/entrenamiento.interface';
+
+class Entrenamiento
+  extends Model<InterfaceEntrenamiento, EntrenamientoCreationAttributes>
+  implements InterfaceEntrenamiento
+{
+  public id!: number;
+  public rutina_id!: number;
+  public fecha!: Date;
+  public duracion_real?: number;
+  public notas?: string;
+
+  public readonly createdAt!: Date;
+  public readonly updatedAt!: Date;
+}
 
 export default (sequelize: Sequelize) => {
-  const Entrenamiento = sequelize.define<EntrenamientoInstance, EntrenamientoCreationAttributes>(
-    'Entrenamiento',
+  Entrenamiento.init(
     {
       id: {
         type: DataTypes.INTEGER,
@@ -32,7 +45,9 @@ export default (sequelize: Sequelize) => {
       },
     },
     {
+      sequelize,
       tableName: 'entrenamientos',
+      modelName: 'Entrenamiento',
       timestamps: true,
     }
   );

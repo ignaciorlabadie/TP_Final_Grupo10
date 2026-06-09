@@ -1,9 +1,24 @@
-import { DataTypes, Sequelize } from 'sequelize';
-import { RutinaEjercicioInstance, RutinaEjercicioCreationAttributes } from './interfaces/rutina_ejercicio.interface';
+import { DataTypes, Model, Sequelize } from 'sequelize';
+import { InterfaceRutinaEjercicio, RutinaEjercicioCreationAttributes } from './interfaces/rutina_ejercicio.interface';
+
+class RutinaEjercicio
+  extends Model<InterfaceRutinaEjercicio, RutinaEjercicioCreationAttributes>
+  implements InterfaceRutinaEjercicio
+{
+  public id!: number;
+  public rutina_id!: number;
+  public ejercicio_id!: number;
+  public orden?: number;
+  public series?: number;
+  public repeticiones?: number;
+  public descanso_segundos?: number;
+
+  public readonly createdAt!: Date;
+  public readonly updatedAt!: Date;
+}
 
 export default (sequelize: Sequelize) => {
-  const RutinaEjercicio = sequelize.define<RutinaEjercicioInstance, RutinaEjercicioCreationAttributes>(
-    'RutinaEjercicio',
+  RutinaEjercicio.init(
     {
       id: {
         type: DataTypes.INTEGER,
@@ -45,7 +60,9 @@ export default (sequelize: Sequelize) => {
       },
     },
     {
+      sequelize,
       tableName: 'rutina_ejercicios',
+      modelName: 'RutinaEjercicio',
       timestamps: true,
     }
   );
