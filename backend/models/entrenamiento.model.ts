@@ -1,41 +1,72 @@
-import { DataTypes, Sequelize } from 'sequelize';
-import { EntrenamientoInstance, EntrenamientoCreationAttributes } from './interfaces/entrenamiento.interface';
+import { sequelize } from './index'
+import { DataTypes, Model } from 'sequelize'
+import {
+  InterfaceEntrenamiento,
+  EntrenamientoCreationAttributes
+} from './interfaces/entrenamiento.interface'
 
-export default (sequelize: Sequelize) => {
-  const Entrenamiento = sequelize.define<EntrenamientoInstance, EntrenamientoCreationAttributes>(
-    'Entrenamiento',
-    {
-      id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-      },
-      rutina_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-      },
-      fecha: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: DataTypes.NOW,
-      },
-      duracion_real: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-        validate: {
-          min: 1,
-        },
-      },
-      notas: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-      },
+type InputEntrenamiento = Omit<InterfaceEntrenamiento, 'id' | 'fecha'>
+
+export class EntrenamientoModel
+  extends Model<InterfaceEntrenamiento, EntrenamientoCreationAttributes>
+  implements InterfaceEntrenamiento
+{
+  declare id: number
+  declare rutina_id: number
+  declare fecha: Date
+  declare duracion_real: number | undefined
+  declare notas: string | undefined
+  declare readonly createdAt: Date
+  declare readonly updatedAt: Date
+
+  static async findAllEntrenamientos(): Promise<EntrenamientoModel[]> {
+    return await EntrenamientoModel.findAll()
+  }
+
+  static async findById(id: string): Promise<EntrenamientoModel | null> {
+    return await EntrenamientoModel.findByPk(id)
+  }
+
+  static async createEntrenamiento(input: InputEntrenamiento): Promise<EntrenamientoModel> {
+    return await EntrenamientoModel.create(input)
+  }
+
+  static async findLastEntrenamiento(): Promise<EntrenamientoModel | null> {
+    return await EntrenamientoModel.findOne({
+      order: [['id', 'DESC']]
+    })
+  }
+}
+
+EntrenamientoModel.init(
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
     },
-    {
-      tableName: 'entrenamientos',
-      timestamps: true,
+    rutina_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    fecha: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW
+    },
+    duracion_real: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      validate: { min: 1 }
+    },
+    notas: {
+      type: DataTypes.TEXT,
+      allowNull: true
     }
-  );
-
-  return Entrenamiento;
-};
+  },
+  {
+    sequelize,
+    tableName: 'entrenamientos',
+    timestamps: true
+  }
+)
