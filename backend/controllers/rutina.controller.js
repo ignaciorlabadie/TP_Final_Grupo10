@@ -1,11 +1,11 @@
-const { Rutina, RutinaEjercicio, Ejercicio } = require('../models');
+const { RutinaModel, RutinaEjercicioModel, EjercicioModel } = require('../models');
 
 const getAllRutinas = async (req, res, next) => {
   try {
-    const rutinas = await Rutina.findAll({
+    const rutinas = await RutinaModel.findAll({
       include: [
         {
-          model: Ejercicio,
+          model: EjercicioModel,
           // El through para traer la tabla intermedia de rutina y ejercicios
           through: { attributes: ['orden', 'series', 'repeticiones', 'descanso_segundos'] },
         },
@@ -26,10 +26,10 @@ const getAllRutinas = async (req, res, next) => {
 const getRutinaById = async (req, res, next) => {
   const { id } = req.params;
   try {
-    const rutina = await Rutina.findByPk(Number(id), {
+    const rutina = await RutinaModel.findByPk(Number(id), {
       include: [
         {
-          model: Ejercicio,
+          model: EjercicioModel,
           through: { attributes: ['orden', 'series', 'repeticiones', 'descanso_segundos'] },
         },
       ],
@@ -49,7 +49,7 @@ const postNewRutina = async (req, res, next) => {
   try {
     const { nombre, descripcion, duracion_minutos, ejercicios } = req.body;
 
-    const nuevaRutina = await Rutina.create({ nombre, descripcion, duracion_minutos });
+    const nuevaRutina = await RutinaModel.create({ nombre, descripcion, duracion_minutos });
 
     if (ejercicios && ejercicios.length > 0) {
       const ejerciciosData = ejercicios.map((ej, index) => ({
@@ -60,13 +60,13 @@ const postNewRutina = async (req, res, next) => {
         repeticiones: ej.repeticiones ?? 1,
         descanso_segundos: ej.descanso_segundos ?? 60,
       }));
-      await RutinaEjercicio.bulkCreate(ejerciciosData); // Agregamos todos los ejercicios en la misma consulta
+      await RutinaEjercicioModel.bulkCreate(ejerciciosData); // Agregamos todos los ejercicios en la misma consulta
     }
 
-    const rutinaCompleta = await Rutina.findByPk(nuevaRutina.id, {
+    const rutinaCompleta = await RutinaModel.findByPk(nuevaRutina.id, {
       include: [
         {
-          model: Ejercicio,
+          model: EjercicioModel,
           through: { attributes: ['orden', 'series', 'repeticiones', 'descanso_segundos'] },
         },
       ],
@@ -87,7 +87,7 @@ const updateRutina = async (req, res, next) => {
     const { id } = req.params;
     const { nombre, descripcion, duracion_minutos, ejercicios } = req.body;
 
-    const rutina = await Rutina.findByPk(Number(id));
+    const rutina = await RutinaModel.findByPk(Number(id));
     if (!rutina) {
       return res.status(404).json({ msg: `No se encontró la rutina con el id ${id}` });
     }
@@ -95,7 +95,7 @@ const updateRutina = async (req, res, next) => {
     await rutina.update({ nombre, descripcion, duracion_minutos });
 
     if (ejercicios) {
-      await RutinaEjercicio.destroy({ where: { rutina_id: id } });
+      await RutinaEjercicioModel.destroy({ where: { rutina_id: id } });
 
       const ejerciciosData = ejercicios.map((ej, index) => ({
         rutina_id: Number(id),
@@ -105,13 +105,13 @@ const updateRutina = async (req, res, next) => {
         repeticiones: ej.repeticiones ?? 1,
         descanso_segundos: ej.descanso_segundos ?? 60,
       }));
-      await RutinaEjercicio.bulkCreate(ejerciciosData);
+      await RutinaEjercicioModel.bulkCreate(ejerciciosData);
     }
 
-    const rutinaActualizada = await Rutina.findByPk(Number(id), {
+    const rutinaActualizada = await RutinaModel.findByPk(Number(id), {
       include: [
         {
-          model: Ejercicio,
+          model: EjercicioModel,
           through: { attributes: ['orden', 'series', 'repeticiones', 'descanso_segundos'] },
         },
       ],
@@ -127,13 +127,13 @@ const updateRutina = async (req, res, next) => {
 const deleteRutina = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const rutina = await Rutina.findByPk(Number(id));
+    const rutina = await RutinaModel.findByPk(Number(id));
 
     if (!rutina) {
       return res.status(404).json({ msg: `No se encontró la rutina con el id ${id}` });
     }
 
-    await RutinaEjercicio.destroy({ where: { rutina_id: id } });
+    await RutinaEjercicioModel.destroy({ where: { rutina_id: id } });
     await rutina.destroy();
 
     return res.status(200).json({ msg: 'Rutina eliminada correctamente' });

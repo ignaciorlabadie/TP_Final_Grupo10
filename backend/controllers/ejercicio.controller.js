@@ -1,8 +1,8 @@
-const { Ejercicio, EntrenamientoEjercicio, Entrenamiento } = require('../models');
+const { EjercicioModel, EntrenamientoEjercicioModel, EntrenamientoModel } = require('../models');
 
 const getAllEjercicios = async (req, res, next) => {
   try {
-    const ejercicios = await Ejercicio.findAll();
+    const ejercicios = await EjercicioModel.findAll();
 
     if (ejercicios.length === 0) {
       return res.status(404).json({
@@ -19,7 +19,7 @@ const getAllEjercicios = async (req, res, next) => {
 const getEjercicioById = async (req, res, next) => {
   const { id } = req.params;
   try {
-    const ejercicio = await Ejercicio.findByPk(Number(id));
+    const ejercicio = await EjercicioModel.findByPk(Number(id));
 
     if (!ejercicio) {
       return res.status(404).json({
@@ -36,7 +36,7 @@ const getEjercicioById = async (req, res, next) => {
 const postNewEjercicio = async (req, res, next) => {
   try {
     const { nombre, tipo } = req.body;
-    const nuevoEjercicio = await Ejercicio.create({ nombre, tipo });
+    const nuevoEjercicio = await EjercicioModel.create({ nombre, tipo });
     return res.status(201).json({
       msg: 'Ejercicio creado correctamente',
       ejercicio: nuevoEjercicio
@@ -51,7 +51,7 @@ const updateEjercicio = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { nombre, tipo } = req.body;
-    const ejercicio = await Ejercicio.findByPk(Number(id));
+    const ejercicio = await EjercicioModel.findByPk(Number(id));
 
     if (!ejercicio) {
       return res.status(404).json({ msg: `No se encontró el ejercicio con el id ${id}` });
@@ -68,7 +68,7 @@ const updateEjercicio = async (req, res, next) => {
 const deleteEjercicio = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const ejercicio = await Ejercicio.findByPk(Number(id));
+    const ejercicio = await EjercicioModel.findByPk(Number(id));
 
     if (!ejercicio) {
       return res.status(404).json({ msg: `No se encontró el ejercicio con el id ${id}` });
@@ -85,21 +85,21 @@ const deleteEjercicio = async (req, res, next) => {
 const getProgresoEjercicio = async (req, res, next) => {
   const { id } = req.params;
   try {
-    const ejercicio = await Ejercicio.findByPk(Number(id));
+    const ejercicio = await EjercicioModel.findByPk(Number(id));
     if (!ejercicio) {
       return res.status(404).json({ msg: `No se encontró el ejercicio con el id ${id}` });
     }
 
-    const progreso = await EntrenamientoEjercicio.findAll({
+    const progreso = await EntrenamientoEjercicioModel.findAll({
       where: { ejercicio_id: id },
       attributes: ['series_realizadas', 'repeticiones_realizadas', 'peso_usado'],
       include: [
         {
-          model: Entrenamiento,
+          model: EntrenamientoModel,
           attributes: ['fecha', 'notas'],
         },
       ],
-      order: [[Entrenamiento, 'fecha', 'DESC']],
+      order: [[EntrenamientoModel, 'fecha', 'DESC']],
     });
 
     if (progreso.length === 0) {

@@ -1,26 +1,26 @@
-const { Entrenamiento, EntrenamientoEjercicio, Ejercicio, sequelize } = require('../models');
+const { EntrenamientoModel, EntrenamientoEjercicioModel, EjercicioModel, sequelize } = require('../models');
 
 const { QueryTypes } = require('sequelize');
 
 const getEstadisticas = async (req, res, next) => {
   try {
-    const totalEntrenamientos = await Entrenamiento.count();
+    const totalEntrenamientos = await EntrenamientoModel.count();
 
-    const tiempoTotal = await Entrenamiento.sum('duracion_real');
+    const tiempoTotal = await EntrenamientoModel.sum('duracion_real');
 
-    const promedioDuracion = await Entrenamiento.findOne({
+    const promedioDuracion = await EntrenamientoModel.findOne({
       attributes: [[sequelize.fn('AVG', sequelize.col('duracion_real')), 'promedio']],
       raw: true,
     });
 
-    const ejercicioMasFrecuente = await EntrenamientoEjercicio.findAll({
+    const ejercicioMasFrecuente = await EntrenamientoEjercicioModel.findAll({
       attributes: [
         'ejercicio_id',
         [sequelize.fn('COUNT', sequelize.col('ejercicio_id')), 'total'],
       ],
       include: [
         {
-          model: Ejercicio,
+          model: EjercicioModel,
           attributes: ['nombre', 'tipo'],
         },
       ],

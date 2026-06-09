@@ -1,4 +1,4 @@
-const { User } = require('../models');
+// const { User } = require('../models');
 const { generarToken } = require('../middleware/auth');
 
 const register = async (req, res) => {
