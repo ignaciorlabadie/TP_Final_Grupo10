@@ -1,56 +1,72 @@
-import { DataTypes, Model, Sequelize } from 'sequelize';
-import { InterfaceEntrenamiento, EntrenamientoCreationAttributes } from './interfaces/entrenamiento.interface';
+import { sequelize } from './index'
+import { DataTypes, Model } from 'sequelize'
+import {
+  InterfaceEntrenamiento,
+  EntrenamientoCreationAttributes
+} from './interfaces/entrenamiento.interface'
 
-class Entrenamiento
+type InputEntrenamiento = Omit<InterfaceEntrenamiento, 'id' | 'fecha'>
+
+export class EntrenamientoModel
   extends Model<InterfaceEntrenamiento, EntrenamientoCreationAttributes>
   implements InterfaceEntrenamiento
 {
-  public id!: number;
-  public rutina_id!: number;
-  public fecha!: Date;
-  public duracion_real?: number;
-  public notas?: string;
+  declare id: number
+  declare rutina_id: number
+  declare fecha: Date
+  declare duracion_real: number | undefined
+  declare notas: string | undefined
+  declare readonly createdAt: Date
+  declare readonly updatedAt: Date
 
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
+  static async findAllEntrenamientos(): Promise<EntrenamientoModel[]> {
+    return await EntrenamientoModel.findAll()
+  }
+
+  static async findById(id: string): Promise<EntrenamientoModel | null> {
+    return await EntrenamientoModel.findByPk(id)
+  }
+
+  static async createEntrenamiento(input: InputEntrenamiento): Promise<EntrenamientoModel> {
+    return await EntrenamientoModel.create(input)
+  }
+
+  static async findLastEntrenamiento(): Promise<EntrenamientoModel | null> {
+    return await EntrenamientoModel.findOne({
+      order: [['id', 'DESC']]
+    })
+  }
 }
 
-export default (sequelize: Sequelize) => {
-  Entrenamiento.init(
-    {
-      id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-      },
-      rutina_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-      },
-      fecha: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: DataTypes.NOW,
-      },
-      duracion_real: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-        validate: {
-          min: 1,
-        },
-      },
-      notas: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-      },
+EntrenamientoModel.init(
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
     },
-    {
-      sequelize,
-      tableName: 'entrenamientos',
-      modelName: 'Entrenamiento',
-      timestamps: true,
+    rutina_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    fecha: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW
+    },
+    duracion_real: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      validate: { min: 1 }
+    },
+    notas: {
+      type: DataTypes.TEXT,
+      allowNull: true
     }
-  );
-
-  return Entrenamiento;
-};
+  },
+  {
+    sequelize,
+    tableName: 'entrenamientos',
+    timestamps: true
+  }
+)

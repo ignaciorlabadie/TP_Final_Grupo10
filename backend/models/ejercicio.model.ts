@@ -1,49 +1,65 @@
-import { DataTypes, Model, Optional, Sequelize } from 'sequelize';
-import { InterfaceEjercicio, EjercicioCreationAttributes } from './interfaces/ejercicio.interface';
+import { sequelize } from './index'
+import { DataTypes, Model, Optional } from 'sequelize'
+import { InterfaceEjercicio } from './interfaces/ejercicio.interface'
 
-class Ejercicio
+type InputEjercicio = Omit<InterfaceEjercicio, 'id'>
+interface EjercicioCreationAttributes extends Optional<InterfaceEjercicio, 'id'> {}
+
+export class EjercicioModel
   extends Model<InterfaceEjercicio, EjercicioCreationAttributes>
   implements InterfaceEjercicio
 {
-  public id!: number;
-  public nombre!: string;
-  public tipo!: string;
+  declare id: number
+  declare nombre: string
+  declare tipo: string
+  declare readonly createdAt: Date
+  declare readonly updatedAt: Date
 
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
+  static async findAllEjercicios(): Promise<EjercicioModel[]> {
+    return await EjercicioModel.findAll()
+  }
+
+  static async findById(id: string): Promise<EjercicioModel | null> {
+    return await EjercicioModel.findByPk(id)
+  }
+
+  static async createEjercicio(ejercicioInput: InputEjercicio): Promise<EjercicioModel> {
+    return await EjercicioModel.create(ejercicioInput)
+  }
+
+  static async findLastEjercicio(): Promise<EjercicioModel | null> {
+    return await EjercicioModel.findOne({
+      order: [['id', 'DESC']]
+    })
+  }
 }
 
-export default (sequelize: Sequelize) => {
-  Ejercicio.init(
-    {
-      id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-      },
-      nombre: {
-        type: DataTypes.STRING(100),
-        allowNull: false,
-        validate: {
-          notEmpty: true,
-          len: [2, 100],
-        },
-      },
-      tipo: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          notEmpty: true,
-        },
-      },
+EjercicioModel.init(
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
     },
-    {
-      sequelize,
-      tableName: 'ejercicios',
-      modelName: 'Ejercicio',
-      timestamps: true,
+    nombre: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+        len: [2, 100]
+      }
+    },
+    tipo: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: true
+      }
     }
-  );
-
-  return Ejercicio;
-};
+  },
+  {
+    sequelize,
+    tableName: 'ejercicios',
+    timestamps: true
+  }
+)
