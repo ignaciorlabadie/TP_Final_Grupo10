@@ -1,9 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { getAllEjercicios, getEjercicioById, postNewEjercicio, updateEjercicio, deleteEjercicio, getProgresoEjercicio } = require('../controllers/ejercicio.controller');
+const { getAllEjercicios, getEjercicioById, postNewEjercicio, updateEjercicio, deleteEjercicio, getProgresoEjercicio, getEjerciciosByTipo, getCountEjercicios } = require('../controllers/ejercicio.controller');
 const { validateInputEjercicios } = require('../middleware/ejercicio-validator.middleware');
 
 router.get('/', getAllEjercicios);
+router.get('/count', getCountEjercicios);
+router.get('/tipo/:tipo', getEjerciciosByTipo);
 router.get('/:id', getEjercicioById);
 router.post('/', validateInputEjercicios, postNewEjercicio);
 router.put('/:id', validateInputEjercicios, updateEjercicio);

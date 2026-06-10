@@ -4,7 +4,7 @@ const { EntrenamientoModel } = require('../models/entrenamiento.model');
 
 const getAllEjercicios = async (req, res, next) => {
   try {
-    const ejercicios = await EjercicioModel.findAll();
+    const ejercicios = await EjercicioModel.findAllEjercicios();
 
     if (ejercicios.length === 0) {
       return res.status(404).json({
@@ -21,7 +21,7 @@ const getAllEjercicios = async (req, res, next) => {
 const getEjercicioById = async (req, res, next) => {
   const { id } = req.params;
   try {
-    const ejercicio = await EjercicioModel.findByPk(Number(id));
+    const ejercicio = await EjercicioModel.findById(Number(id));
 
     if (!ejercicio) {
       return res.status(404).json({
@@ -38,7 +38,7 @@ const getEjercicioById = async (req, res, next) => {
 const postNewEjercicio = async (req, res, next) => {
   try {
     const { nombre, tipo } = req.body;
-    const nuevoEjercicio = await EjercicioModel.create({ nombre, tipo });
+    const nuevoEjercicio = await EjercicioModel.createEjercicio({ nombre, tipo });
     return res.status(201).json({
       msg: 'Ejercicio creado correctamente',
       ejercicio: nuevoEjercicio
@@ -53,13 +53,12 @@ const updateEjercicio = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { nombre, tipo } = req.body;
-    const ejercicio = await EjercicioModel.findByPk(Number(id));
+    const ejercicio = await EjercicioModel.updateEjercicio(Number(id), { nombre, tipo });
 
     if (!ejercicio) {
       return res.status(404).json({ msg: `No se encontró el ejercicio con el id ${id}` });
     }
 
-    await ejercicio.update({ nombre, tipo });
     return res.status(200).json({ msg: 'Ejercicio actualizado correctamente', ejercicio });
   } catch (error) {
     console.log(error);
@@ -70,13 +69,12 @@ const updateEjercicio = async (req, res, next) => {
 const deleteEjercicio = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const ejercicio = await EjercicioModel.findByPk(Number(id));
+    const deleted = await EjercicioModel.deleteEjercicio(Number(id));
 
-    if (!ejercicio) {
+    if (!deleted) {
       return res.status(404).json({ msg: `No se encontró el ejercicio con el id ${id}` });
     }
 
-    await ejercicio.destroy();
     return res.status(200).json({ msg: 'Ejercicio eliminado correctamente' });
   } catch (error) {
     console.log(error);
@@ -87,7 +85,7 @@ const deleteEjercicio = async (req, res, next) => {
 const getProgresoEjercicio = async (req, res, next) => {
   const { id } = req.params;
   try {
-    const ejercicio = await EjercicioModel.findByPk(Number(id));
+    const ejercicio = await EjercicioModel.findById(Number(id));
     if (!ejercicio) {
       return res.status(404).json({ msg: `No se encontró el ejercicio con el id ${id}` });
     }
@@ -118,4 +116,30 @@ const getProgresoEjercicio = async (req, res, next) => {
   }
 };
 
-module.exports = { getAllEjercicios, getEjercicioById, postNewEjercicio, updateEjercicio, deleteEjercicio, getProgresoEjercicio };
+const getEjerciciosByTipo = async (req, res, next) => {
+  const { tipo } = req.params;
+  try {
+    const ejercicios = await EjercicioModel.findByTipo(tipo);
+
+    if (ejercicios.length === 0) {
+      return res.status(404).json({ msg: `No se encontraron ejercicios del tipo ${tipo}` });
+    }
+
+    return res.status(200).json(ejercicios);
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
+
+const getCountEjercicios = async (req, res, next) => {
+  try {
+    const count = await EjercicioModel.countEjercicios();
+    return res.status(200).json({ total: count });
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
+
+module.exports = { getAllEjercicios, getEjercicioById, postNewEjercicio, updateEjercicio, deleteEjercicio, getProgresoEjercicio, getEjerciciosByTipo, getCountEjercicios };
