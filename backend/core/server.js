@@ -21,6 +21,9 @@ class Server {
   }
 
   rutas() {
+    this.app.get('/', (req, res) => {
+      res.json({ message: 'API del TP Final del Grupo 10' })
+    })
     this.app.use('/api', require('../routes/index.js'))
   }
 
