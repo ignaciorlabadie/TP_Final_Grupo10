@@ -1,4 +1,7 @@
-const { EntrenamientoModel, EntrenamientoEjercicioModel, RutinaModel, EjercicioModel } = require('../models');
+const { EntrenamientoModel } = require('../models/entrenamiento.model');
+const { EntrenamientoEjercicioModel } = require('../models/entrenamiento_ejercicio.model');
+const { RutinaModel } = require('../models/rutina.model');
+const { EjercicioModel } = require('../models/ejercicio.model');
 
 const getAllEntrenamientos = async (req, res, next) => {
   try {

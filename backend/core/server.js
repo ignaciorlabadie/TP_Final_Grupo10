@@ -21,11 +21,10 @@ class Server {
   }
 
   rutas() {
-    this.app.use('/ejercicios', require('../routes/ejercicio.js'))
-    this.app.use('/rutinas', require('../routes/rutina.js'))
-    this.app.use('/entrenamientos', require('../routes/entrenamiento.js'))
-    this.app.use('/estadisticas', require('../routes/estadisticas.js'))
-    // this.app.use('/auth', require('../routes/auth.js'))
+    this.app.get('/', (req, res) => {
+      res.json({ message: 'API del TP Final del Grupo 10' })
+    })
+    this.app.use('/api', require('../routes/index.js'))
   }
 
   async connectToDataBase() {
