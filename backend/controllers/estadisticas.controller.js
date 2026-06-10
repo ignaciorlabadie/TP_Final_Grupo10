@@ -1,4 +1,7 @@
-const { EntrenamientoModel, EntrenamientoEjercicioModel, EjercicioModel, sequelize } = require('../models');
+const { EntrenamientoModel } = require('../models/entrenamiento.model');
+const { EntrenamientoEjercicioModel } = require('../models/entrenamiento_ejercicio.model');
+const { EjercicioModel } = require('../models/ejercicio.model');
+const { sequelize } = require('../models');
 
 const { QueryTypes } = require('sequelize');
 
@@ -24,7 +27,7 @@ const getEstadisticas = async (req, res, next) => {
           attributes: ['nombre', 'tipo'],
         },
       ],
-      group: ['ejercicio_id', 'Ejercicio.id'],
+      group: ['ejercicio_id', 'EjercicioModel.id'],
       order: [[sequelize.fn('COUNT', sequelize.col('ejercicio_id')), 'DESC']],
       limit: 1,
       raw: true,
