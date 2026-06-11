@@ -1,12 +1,12 @@
 import { sequelize } from './index'
 import { DataTypes, Model } from 'sequelize'
 import {
-  InterfaceEntrenamiento,
-  EntrenamientoCreationAttributes
+  InterfaceEntrenamiento
 } from './interfaces/entrenamiento.interface'
 
 interface InputEntrenamiento extends Omit<InterfaceEntrenamiento, 'id' | 'fecha'> {}
 interface EntrenamientoUpdateData extends Partial<InputEntrenamiento> {}
+interface EntrenamientoCreationAttributes extends InputEntrenamiento {}
 
 export class EntrenamientoModel
   extends Model<InterfaceEntrenamiento, EntrenamientoCreationAttributes>
