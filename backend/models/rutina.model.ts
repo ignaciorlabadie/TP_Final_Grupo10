@@ -1,11 +1,8 @@
 import { sequelize } from './index'
-import { DataTypes, Model } from 'sequelize'
-import {
-  InterfaceRutina,
-  RutinaCreationAttributes
-} from './interfaces/rutina.interface'
+import { DataTypes, Model, Optional } from 'sequelize'
+import { InterfaceRutina } from './interfaces/rutina.interface'
 
-type InputRutina = Omit<InterfaceRutina, 'id'>
+interface RutinaCreationAttributes extends Optional<InterfaceRutina, 'id'> {}
 
 export class RutinaModel
   extends Model<InterfaceRutina, RutinaCreationAttributes>
@@ -22,12 +19,12 @@ export class RutinaModel
     return await RutinaModel.findAll()
   }
 
-  static async findById(id: string): Promise<RutinaModel | null> {
+  static async findById(id: number): Promise<RutinaModel | null> {
     return await RutinaModel.findByPk(id)
   }
 
-  static async createRutina(input: InputRutina): Promise<RutinaModel> {
-    return await RutinaModel.create(input)
+  static async createRutina(rutinaInput: RutinaCreationAttributes): Promise<RutinaModel> {
+    return await RutinaModel.create(rutinaInput)
   }
 
   static async findLastRutina(): Promise<RutinaModel | null> {
@@ -35,6 +32,28 @@ export class RutinaModel
       order: [['id', 'DESC']]
     })
   }
+  
+  static async updateRutina(id: number, data: Partial<RutinaCreationAttributes>): Promise<RutinaModel | null> {
+    const rutina = await this.findByPk(id)
+    if (!rutina) return null
+    return await rutina.update(data)
+  }
+
+  static async deleteRutina(id: number): Promise<boolean> {
+    const rutina = await this.findByPk(id)
+    if (!rutina) return false
+    await rutina.destroy()
+    return true
+  }
+
+  static async findByNombre(nombre: string): Promise<RutinaModel[]> {
+    return await this.findAll({ where: { nombre } })
+  }
+
+  static async countRutinas(): Promise<number> {
+    return await this.count()
+  }
+
 }
 
 RutinaModel.init(

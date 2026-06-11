@@ -53,7 +53,7 @@ module.exports = {
       acquire: 30000,
       idle: 10000
     },
-    dialectOptions: {
+    dialectOptions: { //como si fuera un if 
       ssl: {
         require: true,
         rejectUnauthorized: false
