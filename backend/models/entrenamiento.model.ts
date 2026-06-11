@@ -20,11 +20,11 @@ export class EntrenamientoModel
   declare readonly createdAt: Date
   declare readonly updatedAt: Date
 
-  static async findAllEntrenamientos(options?: any): Promise<EntrenamientoModel[]> {
+  static async findAllEntrenamientos(options: any): Promise<EntrenamientoModel[]> {
     return await EntrenamientoModel.findAll(options)
   }
 
-  static async findById(id: number, options?: any): Promise<EntrenamientoModel | null> {
+  static async findById(id: number, options: any): Promise<EntrenamientoModel | null> {
     return await EntrenamientoModel.findByPk(id, options)
   }
 
