@@ -1,5 +1,3 @@
-import { Model, Optional } from 'sequelize';
-
 export interface InterfaceEntrenamientoEjercicio {
   id: number;
   entrenamiento_id: number;
@@ -8,10 +6,3 @@ export interface InterfaceEntrenamientoEjercicio {
   repeticiones_realizadas?: number;
   peso_usado?: number;
 }
-
-export interface EntrenamientoEjercicioCreationAttributes
-  extends Optional<InterfaceEntrenamientoEjercicio, 'id'> {}
-
-export interface EntrenamientoEjercicioInstance
-  extends Model<InterfaceEntrenamientoEjercicio, EntrenamientoEjercicioCreationAttributes>,
-    InterfaceEntrenamientoEjercicio {}
