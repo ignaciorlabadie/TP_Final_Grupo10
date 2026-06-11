@@ -1,6 +1,7 @@
 import { sequelize } from './index'
 import { DataTypes, Model, Optional } from 'sequelize'
 import { InterfaceEntrenamientoEjercicio } from './interfaces/entrenamiento_ejercicio.interface'
+import { EjercicioModel } from './ejercicio.model'
 
 interface EntrenamientoEjercicioCreationAttributes extends Optional<InterfaceEntrenamientoEjercicio, 'id'> {}
 
@@ -55,6 +56,27 @@ export class EntrenamientoEjercicioModel
 
   static async countEntrenamientoEjercicios(): Promise<number> {
     return await this.count()
+  }
+
+  static async findEjercicioMasFrecuente(): Promise<{ ejercicio_id: number; total: number; nombre: string; tipo: string } | null> {
+    const resultado = await this.findAll({
+      attributes: [
+        'ejercicio_id',
+        [sequelize.fn('COUNT', sequelize.col('ejercicio_id')), 'total']
+      ],
+      include: [
+        {
+          model: EjercicioModel,
+          attributes: ['nombre', 'tipo']
+        }
+      ],
+      group: ['ejercicio_id', 'EjercicioModel.id'],
+      order: [[sequelize.fn('COUNT', sequelize.col('ejercicio_id')), 'DESC']],
+      limit: 1,
+      raw: true,
+      nest: true
+    })
+    return resultado.length > 0 ? resultado[0] : null
   }
 }
 
