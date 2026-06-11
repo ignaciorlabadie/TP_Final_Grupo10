@@ -1,11 +1,8 @@
 import { sequelize } from './index'
-import { DataTypes, Model } from 'sequelize'
-import {
-  InterfaceEntrenamientoEjercicio,
-  EntrenamientoEjercicioCreationAttributes
-} from './interfaces/entrenamiento_ejercicio.interface'
+import { DataTypes, Model, Optional } from 'sequelize'
+import { InterfaceEntrenamientoEjercicio } from './interfaces/entrenamiento_ejercicio.interface'
 
-type InputEntrenamientoEjercicio = Omit<InterfaceEntrenamientoEjercicio, 'id'>
+interface EntrenamientoEjercicioCreationAttributes extends Optional<InterfaceEntrenamientoEjercicio, 'id'> {}
 
 export class EntrenamientoEjercicioModel
   extends Model<InterfaceEntrenamientoEjercicio, EntrenamientoEjercicioCreationAttributes>
@@ -24,12 +21,12 @@ export class EntrenamientoEjercicioModel
     return await EntrenamientoEjercicioModel.findAll()
   }
 
-  static async findById(id: string): Promise<EntrenamientoEjercicioModel | null> {
+  static async findById(id: number): Promise<EntrenamientoEjercicioModel | null> {
     return await EntrenamientoEjercicioModel.findByPk(id)
   }
 
   static async createEntrenamientoEjercicio(
-    input: InputEntrenamientoEjercicio
+    input: EntrenamientoEjercicioCreationAttributes
   ): Promise<EntrenamientoEjercicioModel> {
     return await EntrenamientoEjercicioModel.create(input)
   }
@@ -38,6 +35,26 @@ export class EntrenamientoEjercicioModel
     return await EntrenamientoEjercicioModel.findOne({
       order: [['id', 'DESC']]
     })
+  }
+
+  static async updateEntrenamientoEjercicio(
+    id: number,
+    data: Partial<EntrenamientoEjercicioCreationAttributes>
+  ): Promise<EntrenamientoEjercicioModel | null> {
+    const registro = await this.findByPk(id)
+    if (!registro) return null
+    return await registro.update(data)
+  }
+
+  static async deleteEntrenamientoEjercicio(id: number): Promise<boolean> {
+    const registro = await this.findByPk(id)
+    if (!registro) return false
+    await registro.destroy()
+    return true
+  }
+
+  static async countEntrenamientoEjercicios(): Promise<number> {
+    return await this.count()
   }
 }
 
