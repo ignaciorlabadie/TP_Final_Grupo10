@@ -1,28 +1,10 @@
 const { EntrenamientoModel } = require('../models/entrenamiento.model');
 const { EntrenamientoEjercicioModel } = require('../models/entrenamiento_ejercicio.model');
 const { RutinaModel } = require('../models/rutina.model');
-const { EjercicioModel } = require('../models/ejercicio.model');
 
 const getAllEntrenamientos = async (req, res, next) => {
   try {
-    const entrenamientos = await EntrenamientoModel.findAll({
-      include: [
-        {
-          model: RutinaModel,
-          attributes: ['id', 'nombre'],
-        },
-        {
-          model: EntrenamientoEjercicioModel,
-          include: [
-            {
-              model: EjercicioModel,
-              attributes: ['id', 'nombre', 'tipo'],
-            },
-          ],
-        },
-      ],
-      order: [['fecha', 'DESC']],
-    });
+    const entrenamientos = await EntrenamientoModel.findAllEntrenamientos();
 
     if (entrenamientos.length === 0) {
       return res.status(404).json({ msg: 'No se encontraron entrenamientos registrados' });
@@ -37,23 +19,7 @@ const getAllEntrenamientos = async (req, res, next) => {
 const getEntrenamientoById = async (req, res, next) => {
   const { id } = req.params;
   try {
-    const entrenamiento = await EntrenamientoModel.findByPk(Number(id), {
-      include: [
-        {
-          model: RutinaModel,
-          attributes: ['id', 'nombre'],
-        },
-        {
-          model: EntrenamientoEjercicioModel,
-          include: [
-            {
-              model: EjercicioModel,
-              attributes: ['id', 'nombre', 'tipo'],
-            },
-          ],
-        },
-      ],
-    });
+    const entrenamiento = await EntrenamientoModel.findById(Number(id));
 
     if (!entrenamiento) {
       return res.status(404).json({ msg: `No se encontró el entrenamiento con el id ${id}` });
@@ -74,7 +40,7 @@ const postNewEntrenamiento = async (req, res, next) => {
       return res.status(404).json({ msg: `No se encontró la rutina con el id ${rutina_id}` });
     }
 
-    const nuevoEntrenamiento = await EntrenamientoModel.create({
+    const nuevoEntrenamiento = await EntrenamientoModel.createEntrenamiento({
       rutina_id,
       fecha: fecha || new Date(),
       duracion_real,
@@ -92,23 +58,7 @@ const postNewEntrenamiento = async (req, res, next) => {
       await EntrenamientoEjercicioModel.bulkCreate(ejerciciosData);
     }
 
-    const entrenamientoCompleto = await EntrenamientoModel.findByPk(nuevoEntrenamiento.id, {
-      include: [
-        {
-          model: RutinaModel,
-          attributes: ['id', 'nombre'],
-        },
-        {
-          model: EntrenamientoEjercicioModel,
-          include: [
-            {
-              model: EjercicioModel,
-              attributes: ['id', 'nombre', 'tipo'],
-            },
-          ],
-        },
-      ],
-    });
+    const entrenamientoCompleto = await EntrenamientoModel.findById(nuevoEntrenamiento.id);
 
     return res.status(201).json({
       msg: 'Entrenamiento registrado correctamente',
@@ -123,14 +73,14 @@ const postNewEntrenamiento = async (req, res, next) => {
 const deleteEntrenamiento = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const entrenamiento = await EntrenamientoModel.findByPk(Number(id));
-
-    if (!entrenamiento) {
-      return res.status(404).json({ msg: `No se encontró el entrenamiento con el id ${id}` });
-    }
 
     await EntrenamientoEjercicioModel.destroy({ where: { entrenamiento_id: id } });
-    await entrenamiento.destroy();
+
+    const deleted = await EntrenamientoModel.deleteEntrenamiento(Number(id));
+
+    if (!deleted) {
+      return res.status(404).json({ msg: `No se encontró el entrenamiento con el id ${id}` });
+    }
 
     return res.status(200).json({ msg: 'Entrenamiento eliminado correctamente' });
   } catch (error) {
