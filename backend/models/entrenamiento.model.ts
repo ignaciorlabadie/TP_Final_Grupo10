@@ -5,7 +5,8 @@ import {
   EntrenamientoCreationAttributes
 } from './interfaces/entrenamiento.interface'
 
-type InputEntrenamiento = Omit<InterfaceEntrenamiento, 'id' | 'fecha'>
+interface InputEntrenamiento extends Omit<InterfaceEntrenamiento, 'id' | 'fecha'> {}
+interface EntrenamientoUpdateData extends Partial<InputEntrenamiento> {}
 
 export class EntrenamientoModel
   extends Model<InterfaceEntrenamiento, EntrenamientoCreationAttributes>
@@ -19,16 +20,33 @@ export class EntrenamientoModel
   declare readonly createdAt: Date
   declare readonly updatedAt: Date
 
-  static async findAllEntrenamientos(): Promise<EntrenamientoModel[]> {
-    return await EntrenamientoModel.findAll()
+  static async findAllEntrenamientos(options: any): Promise<EntrenamientoModel[]> {
+    return await EntrenamientoModel.findAll(options)
   }
 
-  static async findById(id: string): Promise<EntrenamientoModel | null> {
-    return await EntrenamientoModel.findByPk(id)
+  static async findById(id: number, options: any): Promise<EntrenamientoModel | null> {
+    return await EntrenamientoModel.findByPk(id, options)
   }
 
   static async createEntrenamiento(input: InputEntrenamiento): Promise<EntrenamientoModel> {
     return await EntrenamientoModel.create(input)
+  }
+
+  static async updateEntrenamiento(id: number, data: EntrenamientoUpdateData): Promise<EntrenamientoModel | null> {
+    const entrenamiento = await this.findByPk(id)
+    if (!entrenamiento) return null
+    return await entrenamiento.update(data)
+  }
+
+  static async deleteEntrenamiento(id: number): Promise<boolean> {
+    const entrenamiento = await this.findByPk(id)
+    if (!entrenamiento) return false
+    await entrenamiento.destroy()
+    return true
+  }
+
+  static async countEntrenamientos(): Promise<number> {
+    return await this.count()
   }
 
   static async findLastEntrenamiento(): Promise<EntrenamientoModel | null> {
