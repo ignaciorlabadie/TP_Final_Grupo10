@@ -70,13 +70,19 @@ export class EntrenamientoEjercicioModel
           attributes: ['nombre', 'tipo']
         }
       ],
-      group: ['ejercicio_id', 'EjercicioModel.id'],
+      group: ['entrenamiento_ejercicio.ejercicio_id', 'EjercicioModel.id'],
       order: [[sequelize.fn('COUNT', sequelize.col('ejercicio_id')), 'DESC']],
       limit: 1,
-      raw: true,
-      nest: true
+      raw: true
     })
-    return resultado.length > 0 ? resultado[0] : null
+    if (resultado.length === 0) return null
+    const item = resultado[0] as any
+    return {
+      ejercicio_id: item.ejercicio_id,
+      total: Number(item.total),
+      nombre: item['EjercicioModel.nombre'],
+      tipo: item['EjercicioModel.tipo']
+    }
   }
 }
 
