@@ -14,9 +14,11 @@ const validateInputEntrenamiento = (req, res, next) => {
     errors.push('duracion_real debe ser un número mayor a 0');
   }
 
-  if (ejercicios) {
+  if (ejercicios !== undefined) {
     if (!Array.isArray(ejercicios)) {
       errors.push('ejercicios debe ser un arreglo');
+    } else if (ejercicios.length === 0) {
+      errors.push('Debe incluir al menos un ejercicio en el entrenamiento');
     } else {
       ejercicios.forEach((ej, index) => {
         if (!ej.ejercicio_id || typeof ej.ejercicio_id !== 'number') {
@@ -30,6 +32,8 @@ const validateInputEntrenamiento = (req, res, next) => {
         }
       });
     }
+  } else {
+    errors.push('Debe incluir al menos un ejercicio en el entrenamiento');
   }
 
   if (errors.length > 0) {

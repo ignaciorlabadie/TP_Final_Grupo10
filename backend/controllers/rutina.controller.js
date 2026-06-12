@@ -1,6 +1,7 @@
 const { RutinaModel } = require('../models/rutina.model');
 const { RutinaEjercicioModel } = require('../models/rutina_ejercicio.model');
 const { EjercicioModel } = require('../models/ejercicio.model');
+const { EntrenamientoModel } = require('../models/entrenamiento.model');
 
 const getAllRutinas = async (req, res, next) => {
   try {
@@ -34,18 +35,29 @@ const postNewRutina = async (req, res, next) => {
   try {
     const { nombre, descripcion, duracion_minutos, ejercicios } = req.body;
 
-    const nuevaRutina = await RutinaModel.createRutina({ nombre, descripcion, duracion_minutos });
-    if (ejercicios && ejercicios.length > 0) {
-      const ejerciciosData = ejercicios.map((ej, index) => ({
-        rutina_id: nuevaRutina.id,
-        ejercicio_id: ej.ejercicio_id,
-        orden: ej.orden ?? index + 1,
-        series: ej.series ?? 1,
-        repeticiones: ej.repeticiones ?? 1,
-        descanso_segundos: ej.descanso_segundos ?? 60,
-      }));
-      await RutinaEjercicioModel.bulkCreate(ejerciciosData);
+    const idsEjercicios = ejercicios.map(ej => ej.ejercicio_id);
+    const ejerciciosExistentes = await EjercicioModel.findAll({
+      where: { id: idsEjercicios }
+    });
+    if (ejerciciosExistentes.length !== idsEjercicios.length) {
+      const idsExistentes = ejerciciosExistentes.map(e => e.id);
+      const idsInvalidos = idsEjercicios.filter(id => !idsExistentes.includes(id));
+      return res.status(400).json({
+        errors: [`Los siguientes ejercicio_id no existen: ${idsInvalidos.join(', ')}`]
+      });
     }
+
+    const nuevaRutina = await RutinaModel.createRutina({ nombre, descripcion, duracion_minutos });
+
+    const ejerciciosData = ejercicios.map((ej, index) => ({
+      rutina_id: nuevaRutina.id,
+      ejercicio_id: ej.ejercicio_id,
+      orden: ej.orden ?? index + 1,
+      series: ej.series ?? 1,
+      repeticiones: ej.repeticiones ?? 1,
+      descanso_segundos: ej.descanso_segundos ?? 60,
+    }));
+    await RutinaEjercicioModel.bulkCreate(ejerciciosData);
 
     const rutinaCompleta = await RutinaModel.findById(nuevaRutina.id);
     return res.status(201).json({ msg: 'Rutina creada correctamente', rutina: rutinaCompleta });
@@ -66,6 +78,18 @@ const updateRutina = async (req, res, next) => {
     }
 
     if (ejercicios) {
+      const idsEjercicios = ejercicios.map(ej => ej.ejercicio_id);
+      const ejerciciosExistentes = await EjercicioModel.findAll({
+        where: { id: idsEjercicios }
+      });
+      if (ejerciciosExistentes.length !== idsEjercicios.length) {
+        const idsExistentes = ejerciciosExistentes.map(e => e.id);
+        const idsInvalidos = idsEjercicios.filter(id => !idsExistentes.includes(id));
+        return res.status(400).json({
+          errors: [`Los siguientes ejercicio_id no existen: ${idsInvalidos.join(', ')}`]
+        });
+      }
+
       await RutinaEjercicioModel.destroy({ where: { rutina_id: id } });
 
       const ejerciciosData = ejercicios.map((ej, index) => ({
@@ -90,6 +114,16 @@ const updateRutina = async (req, res, next) => {
 const deleteRutina = async (req, res, next) => {
   try {
     const { id } = req.params;
+
+    const entrenamientos = await EntrenamientoModel.count({
+      where: { rutina_id: id }
+    });
+    if (entrenamientos > 0) {
+      return res.status(400).json({
+        errors: ['No se puede eliminar la rutina porque tiene entrenamientos asociados']
+      });
+    }
+
     await RutinaEjercicioModel.destroy({ where: { rutina_id: id } });
     const deleted = await RutinaModel.deleteRutina(Number(id));
 

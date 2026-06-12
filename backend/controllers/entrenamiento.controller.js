@@ -1,5 +1,6 @@
 const { EntrenamientoModel } = require('../models/entrenamiento.model');
 const { EntrenamientoEjercicioModel } = require('../models/entrenamiento_ejercicio.model');
+const { EjercicioModel } = require('../models/ejercicio.model');
 const { RutinaModel } = require('../models/rutina.model');
 
 const getAllEntrenamientos = async (req, res, next) => {
@@ -47,16 +48,26 @@ const postNewEntrenamiento = async (req, res, next) => {
       notas,
     });
 
-    if (ejercicios && ejercicios.length > 0) {
-      const ejerciciosData = ejercicios.map((ej) => ({
-        entrenamiento_id: nuevoEntrenamiento.id,
-        ejercicio_id: ej.ejercicio_id,
-        series_realizadas: ej.series_realizadas ?? 1,
-        repeticiones_realizadas: ej.repeticiones_realizadas ?? 1,
-        peso_usado: ej.peso_usado ?? null,
-      }));
-      await EntrenamientoEjercicioModel.bulkCreate(ejerciciosData);
+    const idsEjercicios = ejercicios.map(ej => ej.ejercicio_id);
+    const ejerciciosExistentes = await EjercicioModel.findAll({
+      where: { id: idsEjercicios }
+    });
+    if (ejerciciosExistentes.length !== idsEjercicios.length) {
+      const idsExistentes = ejerciciosExistentes.map(e => e.id);
+      const idsInvalidos = idsEjercicios.filter(id => !idsExistentes.includes(id));
+      return res.status(400).json({
+        errors: [`Los siguientes ejercicio_id no existen: ${idsInvalidos.join(', ')}`]
+      });
     }
+
+    const ejerciciosData = ejercicios.map((ej) => ({
+      entrenamiento_id: nuevoEntrenamiento.id,
+      ejercicio_id: ej.ejercicio_id,
+      series_realizadas: ej.series_realizadas ?? 1,
+      repeticiones_realizadas: ej.repeticiones_realizadas ?? 1,
+      peso_usado: ej.peso_usado ?? null,
+    }));
+    await EntrenamientoEjercicioModel.bulkCreate(ejerciciosData);
 
     const entrenamientoCompleto = await EntrenamientoModel.findById(nuevoEntrenamiento.id);
 

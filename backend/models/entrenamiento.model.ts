@@ -1,6 +1,7 @@
 import { sequelize } from './index'
 import { DataTypes, Model, Optional } from 'sequelize'
 import { InterfaceEntrenamiento } from './interfaces/entrenamiento.interface'
+import { EjercicioModel } from './ejercicio.model'
 
 interface EntrenamientoCreationAttributes extends Optional<InterfaceEntrenamiento, 'id' | 'fecha'> {}
 
@@ -17,11 +18,22 @@ export class EntrenamientoModel
   declare readonly updatedAt: Date
 
   static async findAllEntrenamientos(): Promise<EntrenamientoModel[]> {
-    return await EntrenamientoModel.findAll()
+    return await EntrenamientoModel.findAll({
+      include: [{
+        model: EjercicioModel,
+        through: { attributes: ['series_realizadas', 'repeticiones_realizadas', 'peso_usado'] },
+      }],
+      order: [['fecha', 'DESC']]
+    })
   }
 
   static async findById(id: number): Promise<EntrenamientoModel | null> {
-    return await EntrenamientoModel.findByPk(id)
+    return await EntrenamientoModel.findByPk(id, {
+      include: [{
+        model: EjercicioModel,
+        through: { attributes: ['series_realizadas', 'repeticiones_realizadas', 'peso_usado'] },
+      }]
+    })
   }
 
   static async createEntrenamiento(input: EntrenamientoCreationAttributes): Promise<EntrenamientoModel> {
