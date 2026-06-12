@@ -6,9 +6,11 @@ const validateInputRutinas = (req, res, next) => {
     errors.push('Nombre es requerido y debe ser un texto');
   }
 
-  if (ejercicios) {
+  if (ejercicios !== undefined) {
     if (!Array.isArray(ejercicios)) {
       errors.push('Ejercicios debe ser un arreglo');
+    } else if (ejercicios.length === 0) {
+      errors.push('Debe incluir al menos un ejercicio en la rutina');
     } else {
       ejercicios.forEach((ej, index) => {
         if (!ej.ejercicio_id || typeof ej.ejercicio_id !== 'number') {
@@ -22,6 +24,8 @@ const validateInputRutinas = (req, res, next) => {
         }
       });
     }
+  } else if (req.method === 'POST') {
+    errors.push('Debe incluir al menos un ejercicio en la rutina');
   }
 
   if (errors.length > 0) {

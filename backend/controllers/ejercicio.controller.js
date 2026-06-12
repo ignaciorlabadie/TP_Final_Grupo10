@@ -1,4 +1,5 @@
 const { EjercicioModel } = require('../models/ejercicio.model');
+const { RutinaEjercicioModel } = require('../models/rutina_ejercicio.model');
 const { EntrenamientoEjercicioModel } = require('../models/entrenamiento_ejercicio.model');
 const { EntrenamientoModel } = require('../models/entrenamiento.model');
 
@@ -69,6 +70,20 @@ const updateEjercicio = async (req, res, next) => {
 const deleteEjercicio = async (req, res, next) => {
   try {
     const { id } = req.params;
+
+    const enRutinas = await RutinaEjercicioModel.count({
+      where: { ejercicio_id: id }
+    });
+    const enEntrenamientos = await EntrenamientoEjercicioModel.count({
+      where: { ejercicio_id: id }
+    });
+
+    if (enRutinas > 0 || enEntrenamientos > 0) {
+      return res.status(400).json({
+        errors: ['No se puede eliminar el ejercicio porque está siendo usado en rutinas o entrenamientos']
+      });
+    }
+
     const deleted = await EjercicioModel.deleteEjercicio(Number(id));
 
     if (!deleted) {
