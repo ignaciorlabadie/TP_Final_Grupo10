@@ -42,10 +42,6 @@ class Server {
   }
 
   errorHandlerGlobal() {
-    this.app.use((err, req, res, next) => {
-      console.error(err.stack)
-      return res.status(404).json({ msg: 'Error. Pagina no encontrada' })
-    })
     this.app.use(errorHandler)
   }
 
