@@ -34,4 +34,16 @@ export const establecerCardinalidad = (): void => {
   
   EntrenamientoEjercicioModel.belongsTo(EjercicioModel, { foreignKey: 'ejercicio_id' });
   EjercicioModel.hasMany(EntrenamientoEjercicioModel, { foreignKey: 'ejercicio_id' });
+
+  EntrenamientoModel.belongsToMany(EjercicioModel, {
+    through: EntrenamientoEjercicioModel,
+    foreignKey: 'entrenamiento_id',
+    otherKey: 'ejercicio_id',
+  });
+
+  EjercicioModel.belongsToMany(EntrenamientoModel, {
+    through: EntrenamientoEjercicioModel,
+    foreignKey: 'ejercicio_id',
+    otherKey: 'entrenamiento_id',
+  });
 }
