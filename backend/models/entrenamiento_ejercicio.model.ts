@@ -1,7 +1,6 @@
 import { sequelize } from './index'
-import { DataTypes, Model, Optional } from 'sequelize'
+import { DataTypes, Model, Optional, QueryTypes } from 'sequelize'
 import { InterfaceEntrenamientoEjercicio } from './interfaces/entrenamiento_ejercicio.interface'
-import { EjercicioModel } from './ejercicio.model'
 
 interface EntrenamientoEjercicioCreationAttributes extends Optional<InterfaceEntrenamientoEjercicio, 'id'> {}
 
@@ -59,29 +58,21 @@ export class EntrenamientoEjercicioModel
   }
 
   static async findEjercicioMasFrecuente(): Promise<{ ejercicio_id: number; total: number; nombre: string; tipo: string } | null> {
-    const resultado = await this.findAll({
-      attributes: [
-        'ejercicio_id',
-        [sequelize.fn('COUNT', sequelize.col('ejercicio_id')), 'total']
-      ],
-      include: [
-        {
-          model: EjercicioModel,
-          attributes: ['nombre', 'tipo']
-        }
-      ],
-      group: ['entrenamiento_ejercicio.ejercicio_id', 'EjercicioModel.id'],
-      order: [[sequelize.fn('COUNT', sequelize.col('ejercicio_id')), 'DESC']],
-      limit: 1,
-      raw: true
-    })
+    const sql = `
+      SELECT ee.ejercicio_id, COUNT(*)::int AS total, e.nombre, e.tipo
+      FROM entrenamiento_ejercicios ee
+      JOIN ejercicios e ON e.id = ee.ejercicio_id
+      GROUP BY ee.ejercicio_id, e.nombre, e.tipo
+      ORDER BY total DESC
+      LIMIT 1
+    `
+    const resultado: any[] = await sequelize.query(sql, { type: QueryTypes.SELECT })
     if (resultado.length === 0) return null
-    const item = resultado[0] as any
     return {
-      ejercicio_id: item.ejercicio_id,
-      total: Number(item.total),
-      nombre: item['EjercicioModel.nombre'],
-      tipo: item['EjercicioModel.tipo']
+      ejercicio_id: resultado[0].ejercicio_id,
+      total: Number(resultado[0].total),
+      nombre: resultado[0].nombre,
+      tipo: resultado[0].tipo
     }
   }
 }
