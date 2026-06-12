@@ -1,6 +1,7 @@
 import { sequelize } from './index'
 import { DataTypes, Model, Optional } from 'sequelize'
 import { InterfaceRutina } from './interfaces/rutina.interface'
+import { EjercicioModel } from './ejercicio.model'
 
 interface RutinaCreationAttributes extends Optional<InterfaceRutina, 'id'> {}
 
@@ -16,11 +17,25 @@ export class RutinaModel
   declare readonly updatedAt: Date
 
   static async findAllRutinas(): Promise<RutinaModel[]> {
-    return await RutinaModel.findAll()
+    // agrego include de EjercicioModel para traer los ejercicios asociados a cada rutina
+    return await RutinaModel.findAll({ 
+      include: [{
+        model: EjercicioModel,
+        through: { attributes: ['orden', 'series', 'repeticiones', 'descanso_segundos'] },
+      },
+      ],
+      order: [['createdAt', 'DESC']]
+    })
   }
 
   static async findById(id: number): Promise<RutinaModel | null> {
-    return await RutinaModel.findByPk(id)
+    // agrego include de EjercicioModel para traer los ejercicios asociados a la rutina
+    return await RutinaModel.findByPk(id, {
+      include: [{
+        model: EjercicioModel,
+        through: { attributes: ['orden', 'series', 'repeticiones', 'descanso_segundos'] },
+      }]
+    })
   }
 
   static async createRutina(rutinaInput: RutinaCreationAttributes): Promise<RutinaModel> {
