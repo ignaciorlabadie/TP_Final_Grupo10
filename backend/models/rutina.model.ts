@@ -21,6 +21,7 @@ export class RutinaModel
     return await RutinaModel.findAll({ 
       include: [{
         model: EjercicioModel,
+        as: 'ejercicios',
         through: { attributes: ['orden', 'series', 'repeticiones', 'descanso_segundos'] },
       },
       ],
@@ -33,6 +34,7 @@ export class RutinaModel
     return await RutinaModel.findByPk(id, {
       include: [{
         model: EjercicioModel,
+        as: 'ejercicios',
         through: { attributes: ['orden', 'series', 'repeticiones', 'descanso_segundos'] },
       }]
     })
