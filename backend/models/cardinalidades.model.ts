@@ -10,13 +10,9 @@ import { EntrenamientoEjercicioModel } from './entrenamiento_ejercicio.model'
 
 export const establecerCardinalidad = (): void => {
   RutinaModel.belongsToMany(EjercicioModel, {
-    through: {
-      model: RutinaEjercicioModel,
-      as: 'detalle',
-    },
+    through: RutinaEjercicioModel,
     foreignKey: 'rutina_id',
     otherKey: 'ejercicio_id',
-    as: 'ejercicios',
   });
   
   EjercicioModel.belongsToMany(RutinaModel, {
@@ -40,13 +36,9 @@ export const establecerCardinalidad = (): void => {
   EjercicioModel.hasMany(EntrenamientoEjercicioModel, { foreignKey: 'ejercicio_id' });
 
   EntrenamientoModel.belongsToMany(EjercicioModel, {
-    through: {
-      model: EntrenamientoEjercicioModel,
-      as: 'detalle',
-    },
+    through: EntrenamientoEjercicioModel,
     foreignKey: 'entrenamiento_id',
     otherKey: 'ejercicio_id',
-    as: 'ejercicios',
   });
 
   EjercicioModel.belongsToMany(EntrenamientoModel, {

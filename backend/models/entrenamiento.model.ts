@@ -21,7 +21,6 @@ export class EntrenamientoModel
     return await EntrenamientoModel.findAll({
       include: [{
         model: EjercicioModel,
-        as: 'ejercicios',
         through: { attributes: ['series_realizadas', 'repeticiones_realizadas', 'peso_usado'] },
       }],
       order: [['fecha', 'DESC']]
@@ -32,7 +31,6 @@ export class EntrenamientoModel
     return await EntrenamientoModel.findByPk(id, {
       include: [{
         model: EjercicioModel,
-        as: 'ejercicios',
         through: { attributes: ['series_realizadas', 'repeticiones_realizadas', 'peso_usado'] },
       }]
     })
