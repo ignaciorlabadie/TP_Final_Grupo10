@@ -14,7 +14,7 @@ Esta es una API REST desarrollada como backend para un sistema de gestión de en
 
 La lógica de negocio está implementada en controladores que gestionan las operaciones CRUD, mientras que los modelos en TypeScript definen la estructura de datos y las relaciones entre entidades. El proyecto está dockerizado y orquestado con Docker Compose junto con un frontend en React, una base de datos PostgreSQL, Redis para caché y Caddy como reverse proxy.
 
-> **Nota:** Algunos archivos y funcionalidades se encuentran sin uso o incompletos (como el sistema de autenticación JWT, las migraciones, seeders, tests, y utilidades) porque serán completados y utilizados en una entrega posterior.
+> **Nota:** Algunos archivos y funcionalidades se encuentran sin uso o incompletos porque serán completados y utilizados en una entrega posterior.
 
 ## Metodología de trabajo con Git y GitHub
 
@@ -33,11 +33,7 @@ El desarrollo del proyecto se llevó a cabo utilizando un flujo de trabajo colab
 - **ORM**: Sequelize 6.x
 - **Base de datos**: PostgreSQL 15
 - **Lenguajes**: JavaScript y TypeScript (Modelos)
-- **Autenticación**: JWT (jsonwebtoken + bcryptjs)
-- **Middlewares**: CORS, helmet, morgan, express-rate-limit, express-validator
-- **Caché**: Redis
 - **Contenedores**: Docker + Docker Compose
-- **Testing**: Jest + Supertest
 
 ## Distribución de los archivos y carpetas
 
@@ -49,10 +45,10 @@ El backend está estructurado bajo el patrón MVC adaptado para APIs con Sequeli
 - **/middleware**: Validaciones de entrada (POST y PUT) para asegurar la integridad de los datos antes de que lleguen a los controladores, más un manejador global de errores y el middleware de autenticación JWT (pendiente).
 - **/core**: Contiene la clase Server que inicializa la aplicación Express, conecta a la base de datos y registra los middlewares y rutas.
 - **/config**: Configuración de Sequelize para los entornos de desarrollo, test y producción.
-- **/migrations**: Migraciones de base de datos.
-- **/seeders**: Datos de prueba.
-- **/tests**: Tests automatizados con Jest.
-- **/utils**: Funciones auxiliares.
+- **/migrations**
+- **/seeders**
+- **/tests**
+- **/utils**
 
 ## **Explicación de las Funciones**
 
@@ -88,7 +84,7 @@ El backend está estructurado bajo el patrón MVC adaptado para APIs con Sequeli
 
 - **EntrenamientoEjercicioModel**: Modelo intermedio que registra el desempeño real en cada ejercicio durante un entrenamiento: `series_realizadas`, `repeticiones_realizadas` y `peso_usado`.
 
-- **User.js** (legacy / pendiente): Modelo de usuario para autenticación. Incompleto — contiene TODOs para hashear contraseñas con bcrypt y validar passwords.
+- **User.js** (legacy / pendiente): Modelo de usuario para autenticación. Incompleto — contiene TODOs para hashear contraseñas con bcrypt y validar passwords que serán completados para entregar el dia 12/07.
 
 ### 3. Middlewares de Validación
 
@@ -101,6 +97,8 @@ El backend está estructurado bajo el patrón MVC adaptado para APIs con Sequeli
 - **errorHandler**: Manejador global de errores. Captura `SequelizeValidationError` y retorna error 400 con detalles campo por campo. Para cualquier otro error, retorna 500.
 
 ## Base de Datos (PostgreSQL)
+
+- Se trabajó con la base de datos en neon.
 
 ### Estructura de Tablas
 
@@ -161,3 +159,6 @@ El proyecto cuenta con middlewares específicos para cada entidad que intercepta
 - Formatos válidos y rangos lógicos (series, repeticiones, descanso).
 - Integridad referencial antes de eliminaciones.
 - En caso de enviar datos inválidos o intentar acceder a recursos inexistentes, la API responde con los códigos de estado HTTP correspondientes (400 Bad Request, 404 Not Found, 409 Conflict, 500 Internal Server Error).
+
+## **Link de render**
+  https://tp-final-grupo10.onrender.com
