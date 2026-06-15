@@ -161,4 +161,9 @@ El proyecto cuenta con middlewares específicos para cada entidad que intercepta
 - En caso de enviar datos inválidos o intentar acceder a recursos inexistentes, la API responde con los códigos de estado HTTP correspondientes (400 Bad Request, 404 Not Found, 409 Conflict, 500 Internal Server Error).
 
 ## **Link de render**
-  https://tp-final-grupo10.onrender.com
+
+https://tp-final-grupo10.onrender.com
+
+## **Link de documentación de postman**
+
+https://documenter.getpostman.com/view/55293974/2sBXwsMq5G
