@@ -50,6 +50,44 @@ El backend está estructurado bajo el patrón MVC adaptado para APIs con Sequeli
 - **/tests**
 - **/utils**
 
+## Migraciones y Seeders
+
+El proyecto usa Sequelize CLI para crear y versionar la estructura de la base de datos mediante migraciones, y para cargar datos de prueba con seeders.
+
+### Primera vez que clonen el proyecto (local)
+
+1. Iniciar solo la base de datos:
+   ```
+   docker compose up -d database
+   ```
+2. Ejecutar migraciones (crea las tablas):
+   ```
+   docker compose exec backend npx sequelize-cli db:migrate
+   ```
+3. Cargar datos de prueba:
+   ```
+   docker compose exec backend npx sequelize-cli db:seed:all
+   ```
+4. Levantar el resto de los servicios:
+   ```
+   docker compose up -d
+   ```
+
+### Comandos útiles
+
+```
+# Deshacer la última migración
+docker compose exec backend npx sequelize-cli db:migrate:undo
+
+# Ver estado de migraciones
+docker compose exec backend npx sequelize-cli db:migrate:status
+
+# Revertir todos los seeders
+docker compose exec backend npx sequelize-cli db:seed:undo:all
+```
+
+> En Render + Neon las tablas ya existen, por lo que no es necesario ejecutar migraciones ni seeders.
+
 ## **Explicación de las Funciones**
 
 ### 1. Controladores
