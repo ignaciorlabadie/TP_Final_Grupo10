@@ -56,19 +56,23 @@ El proyecto usa Sequelize CLI para crear y versionar la estructura de la base de
 
 ### Primera vez que clonen el proyecto (local)
 
-1. Iniciar solo la base de datos:
+1. Iniciar la base de datos:
    ```
    docker compose up -d database
    ```
-2. Ejecutar migraciones (crea las tablas):
+2. Esperar a que la base de datos esté lista y levantar el backend:
    ```
-   docker compose exec backend npx sequelize-cli db:migrate
+   docker compose up -d backend
    ```
-3. Cargar datos de prueba:
+3. Ejecutar migraciones (crea las tablas):
    ```
-   docker compose exec backend npx sequelize-cli db:seed:all
+   docker compose exec backend npm run migrate
    ```
-4. Levantar el resto de los servicios:
+4. Cargar datos de prueba:
+   ```
+   docker compose exec backend npm run seed
+   ```
+5. Levantar el resto de los servicios (frontend, caddy, etc.):
    ```
    docker compose up -d
    ```
