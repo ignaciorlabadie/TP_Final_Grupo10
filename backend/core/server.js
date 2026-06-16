@@ -34,10 +34,9 @@ class Server {
         'Cardinalidad y relaciones entre tablas establecidas correctamente'
       )
 
-      await sequelize.sync({ alter: false })
-      console.log('Database sincronizada correctamente')
+      console.log('ejecutar: npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all')
     } catch (error) {
-      console.error('Error en la conexión a la DB: ', error)
+      console.error('Error en la conexión a la DB: ', error.message)
     }
   }
 
