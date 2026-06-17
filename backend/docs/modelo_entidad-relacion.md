@@ -1,6 +1,6 @@
-# Diagrama del Modelo Relacional 
+# Diagrama del Modelo Entidad Relacional 
 <p align="center">
-  <img src="modelo_relacional.png" alt="Diagrama ER" width="1000">
+  <img src="modelo_Entidad-Relacion.png" alt="Diagrama ER" width="1000">
 </p>
 
 ---
