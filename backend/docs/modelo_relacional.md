@@ -1,15 +1,15 @@
 # Diagrama del Modelo Relacional 
 <p align="center">
-  <img src="Modelo_Relacional.png" alt="Diagrama ER" width="1000">
+  <img src="modelo_relacional.png" alt="Diagrama ER" width="1000">
 </p>
 
 ---
 ## Entidades y atributos:
 Son 4 las entidades:
 - Ejercicios, Representa un ejercicio físico disponible en el sistema (ej, sentadilla, pull ups, peso muerto). Tiene id (PK), nombre y tipo (fuerza, cardio)
-- Rutinas, Agrupan ejercicios con un orden, cantidad de series, repeticiones y descanso. Tiene una descripción y nombre de cada ejercicio. Su PK es el id.
+- Rutinas, Agrupan ejercicios con un orden, cantidad de series, repeticiones y descanso. Tiene nombre, descripción y duración estimada (los ejercicios se asocian por la tabla intermedia "Rutina_ejercicios"). Su PK es el id.
 - Entrenamientos, Almacena datos de entrenamientos ya realizados, como la fecha, duración real y notas. Su PK es el id y posee una FK (rutina_id) que tiene implementado un RESTRICT que hace que no se borre una rutina si tiene entrenamientos asociados.
-- Usuarios, 
+- Usuarios, Representa a las personas que van a utilizar el sistema. Tiene id (PK), nombre, email y contraseña.
 
 Hay 2 "entidades intermedias" o enidades relacionales, que surgen de las distintas relaciónes:
 - Rutina_ejercicios, Surge de la relacion muchos a muchos (M:N) de *rutinas* y *ejercicios*. Almacena atributos propios de la relación, como el orden del ejercicio, número series y repeticiones, descanso. Su Primary Key es el id y posee dos Foreing Key (rutina_id y ejercicio_id, que son las PK de las entidades de la relación)
