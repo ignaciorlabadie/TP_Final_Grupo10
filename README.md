@@ -44,6 +44,7 @@ El backend está estructurado bajo el patrón MVC adaptado para APIs con Sequeli
 - **/routes**: Define los endpoints de la API y los asocia con sus respectivos middlewares y controladores.
 - **/middleware**: Validaciones de entrada (POST y PUT) para asegurar la integridad de los datos antes de que lleguen a los controladores, más un manejador global de errores y el middleware de autenticación JWT (pendiente).
 - **/core**: Contiene la clase Server que inicializa la aplicación Express, conecta a la base de datos y registra los middlewares y rutas.
+- **/docs**: Contiene diagramas UML y E-R, junto con un archivo md explicandolo.
 - **/config**: Configuración de Sequelize para los entornos de desarrollo, test y producción.
 - **/migrations**
 - **/seeders**
@@ -151,6 +152,28 @@ docker compose exec backend npx sequelize-cli db:seed:undo:all
 | **rutina_ejercicios**        | `id`, `rutina_id` (FK), `ejercicio_id` (FK), `orden`, `series`, `repeticiones`, `descanso_segundos`              | Junction: pertenece a rutina y ejercicio        |
 | **entrenamientos**           | `id` (PK), `rutina_id` (FK), `fecha`, `duracion_real`, `notas`                                                   | Pertenece a rutina, M:M con ejercicios          |
 | **entrenamiento_ejercicios** | `id`, `entrenamiento_id` (FK), `ejercicio_id` (FK), `series_realizadas`, `repeticiones_realizadas`, `peso_usado` | Junction: pertenece a entrenamiento y ejercicio |
+
+--- 
+
+## Ejemplo de tablas en neon
+
+- Tabla **ejercicios**:
+
+<p align="center">
+  <img src="frontend\src\assets\images\tabla_ejercicios.png" alt="Diagrama ER" width="1000">
+</p>
+
+- Tabla **entrenamientos**
+
+<p align="center">
+  <img src="frontend\src\assets\images\tabla_entrenamientos.png" alt="Diagrama ER" width="1000">
+</p>
+
+- Tabla **rutinas**
+
+<p align="center">
+  <img src="frontend\src\assets\images\tabla_rutinas.png" alt="Diagrama ER" width="1000">
+</p>
 
 ## Endpoints de la API
 
