@@ -1,5 +1,5 @@
 // const { User } = require('../models');
-const { generarToken } = require('../middleware/auth');
+const { generarToken } = require('../middleware/auth.middleware');
 
 const register = async (req, res) => {
   try {

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { getAllRutinas, getRutinaById, postNewRutina, updateRutina, deleteRutina } = require('../controllers/rutina.controller');
-const { validateInputRutinas } = require('../middleware/rutina-validator.middleware');
+const { validateInputRutinas } = require('../middleware/rutina_validator.middleware');
 
 router.get('/', getAllRutinas);
 router.get('/:id', getRutinaById);
