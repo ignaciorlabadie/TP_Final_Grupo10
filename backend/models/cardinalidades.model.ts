@@ -5,7 +5,7 @@ import { RutinaEjercicioModel } from './rutina_ejercicio.model'
 import { EntrenamientoModel } from './entrenamiento.model'
 import { EntrenamientoEjercicioModel } from './entrenamiento_ejercicio.model'
 
-// const UserModel = require('./User');
+// const UserModel = require('./user.model');
 // const User = UserModel(sequelize);
 
 export const establecerCardinalidad = (): void => {

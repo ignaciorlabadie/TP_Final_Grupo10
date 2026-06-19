@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
-// const authRoutes = require('./auth');
-const ejercicioRoutes = require('./ejercicio');
-const rutinaRoutes = require('./rutina');
-const entrenamientoRoutes = require('./entrenamiento');
-const estadisticasRoutes = require('./estadisticas');
+// const authRoutes = require('./auth.routes');
+const ejercicioRoutes = require('./ejercicio.routes');
+const rutinaRoutes = require('./rutina.routes');
+const entrenamientoRoutes = require('./entrenamiento.routes');
+const estadisticasRoutes = require('./estadisticas.routes');
 
 // Ruta de prueba
 router.get('/health', (req, res) => {
