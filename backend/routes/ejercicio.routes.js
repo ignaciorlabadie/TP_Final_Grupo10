@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { getAllEjercicios, getEjercicioById, postNewEjercicio, updateEjercicio, deleteEjercicio, getProgresoEjercicio, getEjerciciosByTipo, getCountEjercicios } = require('../controllers/ejercicio.controller');
-const { validateInputEjercicios } = require('../middleware/ejercicio-validator.middleware');
+const { validateInputEjercicios } = require('../middleware/ejercicio_validator.middleware');
 
 router.get('/', getAllEjercicios);
 router.get('/count', getCountEjercicios);

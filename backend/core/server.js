@@ -1,7 +1,7 @@
 const express = require('express')
 const cors = require('cors')
 require('dotenv').config()
-const errorHandler = require('../middleware/error-handler.middleware')
+const errorHandler = require('../middleware/error_handler.middleware')
 const { sequelize } = require('../models')
 const { establecerCardinalidad } = require('../models/cardinalidades.model')
 

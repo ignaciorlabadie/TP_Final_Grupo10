@@ -127,7 +127,7 @@ docker compose exec backend npx sequelize-cli db:seed:undo:all
 
 - **EntrenamientoEjercicioModel**: Modelo intermedio que registra el desempeño real en cada ejercicio durante un entrenamiento: `series_realizadas`, `repeticiones_realizadas` y `peso_usado`.
 
-- **User.js** (legacy / pendiente): Modelo de usuario para autenticación. Incompleto — contiene TODOs para hashear contraseñas con bcrypt y validar passwords que serán completados para entregar el dia 12/07.
+- **user.model.js** (legacy / pendiente): Modelo de usuario para autenticación. Incompleto — contiene TODOs para hashear contraseñas con bcrypt y validar passwords que serán completados para entregar el dia 12/07.
 
 ### 3. Middlewares de Validación
 

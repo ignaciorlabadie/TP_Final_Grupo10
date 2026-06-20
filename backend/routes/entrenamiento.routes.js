@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { getAllEntrenamientos, getEntrenamientoById, postNewEntrenamiento, deleteEntrenamiento } = require('../controllers/entrenamiento.controller');
-const { validateInputEntrenamiento } = require('../middleware/entrenamiento-validator.middleware');
+const { validateInputEntrenamiento } = require('../middleware/entrenamiento_validator.middleware');
 
 router.get('/', getAllEntrenamientos);
 router.get('/:id', getEntrenamientoById);
