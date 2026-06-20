@@ -13,10 +13,11 @@ const register = async (req, res) => {
 
     // TODO: Crear el usuario en la base de datos usando User.create()
     // Pista: pasar { nombre, email, password }
-    const user = null; // <-- reemplazar esta línea
+    const user = await User.create({ nombre, email, password });
+   
 
     // TODO: Generar un token para el usuario recién creado usando generarToken()
-    const token = null; // <-- reemplazar esta línea
+    const token = generarToken(user);
 
     res.status(201).json({
       message: 'Usuario registrado exitosamente',
@@ -34,14 +35,14 @@ const login = async (req, res) => {
     const { email, password } = req.body;
 
     // TODO: Buscar el usuario por email usando User.findOne()
-    const user = null; // <-- reemplazar esta línea
+    const user = await User.findOne({ where: { email } }); 
 
     if (!user) {
       return res.status(401).json({ error: 'Credenciales inválidas' });
     }
 
     // TODO: Validar la contraseña usando el método user.validarPassword()
-    const passwordValida = false; // <-- reemplazar esta línea
+    const passwordValida = await user.validarPassword(password);
 
     if (!passwordValida) {
       return res.status(401).json({ error: 'Credenciales inválidas' });
@@ -64,8 +65,8 @@ const perfil = async (req, res) => {
   try {
     // TODO: Obtener el usuario desde la base de datos usando el id de req.user
     // Pista: req.user fue seteado por el middleware verificarToken
-    const user = null; // <-- reemplazar esta línea
-
+    const user = await User.findByPk(req.user.id);
+    
     if (!user) {
       return res.status(404).json({ error: 'Usuario no encontrado' });
     }
