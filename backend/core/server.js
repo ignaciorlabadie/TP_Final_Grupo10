@@ -1,5 +1,7 @@
 const express = require('express')
 const cors = require('cors')
+const helmet = require('helmet')
+const morgan = require('morgan')
 require('dotenv').config()
 const errorHandler = require('../middleware/error_handler.middleware')
 const { sequelize } = require('../models')
@@ -16,6 +18,8 @@ class Server {
   }
 
   middleware() {
+    this.app.use(helmet())
+    this.app.use(morgan('dev'))
     this.app.use(cors())
     this.app.use(express.json())
   }
