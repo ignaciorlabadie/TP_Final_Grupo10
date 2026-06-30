@@ -5,8 +5,7 @@ const { EntrenamientoModel } = require('../models/entrenamiento.model');
 
 const getAllRutinas = async (req, res, next) => {
   try {
-    // findAllRutinas() trae los ejercicios asociados a cada rutina, por el include que agregué en el modelo
-    const rutinas = await RutinaModel.findAllRutinas();
+    const rutinas = await RutinaModel.findAllRutinas(req.user.id);
     if (rutinas.length === 0) {
       return res.status(404).json({ msg: 'No se encontraron rutinas cargadas en el sistema' });
     }
@@ -20,7 +19,7 @@ const getAllRutinas = async (req, res, next) => {
 const getRutinaById = async (req, res, next) => {
   const { id } = req.params;
   try {
-    const rutina = await RutinaModel.findById(Number(id));
+    const rutina = await RutinaModel.findById(Number(id), req.user.id);
     if (!rutina) {
       return res.status(404).json({ msg: `No se encontró la rutina con el id ${id}` });
     }
@@ -47,7 +46,7 @@ const postNewRutina = async (req, res, next) => {
       });
     }
 
-    const nuevaRutina = await RutinaModel.createRutina({ nombre, descripcion, duracion_minutos });
+    const nuevaRutina = await RutinaModel.createRutina({ nombre, descripcion, duracion_minutos, user_id: req.user.id });
 
     const ejerciciosData = ejercicios.map((ej, index) => ({
       rutina_id: nuevaRutina.id,
@@ -59,7 +58,7 @@ const postNewRutina = async (req, res, next) => {
     }));
     await RutinaEjercicioModel.bulkCreate(ejerciciosData);
 
-    const rutinaCompleta = await RutinaModel.findById(nuevaRutina.id);
+    const rutinaCompleta = await RutinaModel.findById(nuevaRutina.id, req.user.id);
     return res.status(201).json({ msg: 'Rutina creada correctamente', rutina: rutinaCompleta });
   } catch (error) {
     console.log(error);
@@ -72,7 +71,7 @@ const updateRutina = async (req, res, next) => {
     const { id } = req.params;
     const { nombre, descripcion, duracion_minutos, ejercicios } = req.body;
 
-    const rutina = await RutinaModel.updateRutina(Number(id), { nombre, descripcion, duracion_minutos });
+    const rutina = await RutinaModel.updateRutina(Number(id), { nombre, descripcion, duracion_minutos }, req.user.id);
     if (!rutina) {
       return res.status(404).json({ msg: `No se encontró la rutina con el id ${id}` });
     }
@@ -103,7 +102,7 @@ const updateRutina = async (req, res, next) => {
       await RutinaEjercicioModel.bulkCreate(ejerciciosData);
     }
 
-    const rutinaActualizada = await RutinaModel.findById(Number(id));
+    const rutinaActualizada = await RutinaModel.findById(Number(id), req.user.id);
     return res.status(200).json({ msg: 'Rutina actualizada correctamente', rutina: rutinaActualizada });
   } catch (error) {
     console.log(error);
@@ -125,7 +124,7 @@ const deleteRutina = async (req, res, next) => {
     }
 
     await RutinaEjercicioModel.destroy({ where: { rutina_id: id } });
-    const deleted = await RutinaModel.deleteRutina(Number(id));
+    const deleted = await RutinaModel.deleteRutina(Number(id), req.user.id);
 
     if (!deleted) {
       return res.status(404).json({ msg: `No se encontró la rutina con el id ${id}` });

@@ -13,12 +13,15 @@ export class RutinaModel
   declare nombre: string
   declare descripcion: string | undefined
   declare duracion_minutos: number | undefined
+  declare user_id: number
   declare readonly createdAt: Date
   declare readonly updatedAt: Date
 
-  static async findAllRutinas(): Promise<RutinaModel[]> {
-    // agrego include de EjercicioModel para traer los ejercicios asociados a cada rutina
+  static async findAllRutinas(userId?: number): Promise<RutinaModel[]> {
+    const where: any = {}
+    if (userId) where.user_id = userId
     return await RutinaModel.findAll({ 
+      where,
       include: [{
         model: EjercicioModel,
         through: { attributes: ['orden', 'series', 'repeticiones', 'descanso_segundos'] },
@@ -28,9 +31,11 @@ export class RutinaModel
     })
   }
 
-  static async findById(id: number): Promise<RutinaModel | null> {
-    // agrego include de EjercicioModel para traer los ejercicios asociados a la rutina
-    return await RutinaModel.findByPk(id, {
+  static async findById(id: number, userId?: number): Promise<RutinaModel | null> {
+    const where: any = { id }
+    if (userId) where.user_id = userId
+    return await RutinaModel.findOne({
+      where,
       include: [{
         model: EjercicioModel,
         through: { attributes: ['orden', 'series', 'repeticiones', 'descanso_segundos'] },
@@ -48,14 +53,18 @@ export class RutinaModel
     })
   }
   
-  static async updateRutina(id: number, data: Partial<RutinaCreationAttributes>): Promise<RutinaModel | null> {
-    const rutina = await this.findByPk(id)
+  static async updateRutina(id: number, data: Partial<RutinaCreationAttributes>, userId?: number): Promise<RutinaModel | null> {
+    const where: any = { id }
+    if (userId) where.user_id = userId
+    const rutina = await RutinaModel.findOne({ where })
     if (!rutina) return null
     return await rutina.update(data)
   }
 
-  static async deleteRutina(id: number): Promise<boolean> {
-    const rutina = await this.findByPk(id)
+  static async deleteRutina(id: number, userId?: number): Promise<boolean> {
+    const where: any = { id }
+    if (userId) where.user_id = userId
+    const rutina = await RutinaModel.findOne({ where })
     if (!rutina) return false
     await rutina.destroy()
     return true
@@ -94,6 +103,10 @@ RutinaModel.init(
       type: DataTypes.INTEGER,
       allowNull: true,
       validate: { min: 1 }
+    },
+    user_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false
     }
   },
   {

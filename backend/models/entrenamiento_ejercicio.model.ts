@@ -57,16 +57,23 @@ export class EntrenamientoEjercicioModel
     return await this.count()
   }
 
-  static async findEjercicioMasFrecuente(): Promise<{ ejercicio_id: number; total: number; nombre: string; tipo: string } | null> {
-    const sql = `
+  static async findEjercicioMasFrecuente(userId?: number): Promise<{ ejercicio_id: number; total: number; nombre: string; tipo: string } | null> {
+    let sql = `
       SELECT ee.ejercicio_id, COUNT(*)::int AS total, e.nombre, e.tipo
       FROM entrenamiento_ejercicios ee
       JOIN ejercicios e ON e.id = ee.ejercicio_id
+    `
+    const replacements: any = {}
+    if (userId) {
+      sql += ` JOIN entrenamientos en ON en.id = ee.entrenamiento_id AND en.user_id = :userId\n`
+      replacements.userId = userId
+    }
+    sql += `
       GROUP BY ee.ejercicio_id, e.nombre, e.tipo
       ORDER BY total DESC
       LIMIT 1
     `
-    const resultado: any[] = await sequelize.query(sql, { type: QueryTypes.SELECT })
+    const resultado: any[] = await sequelize.query(sql, { type: QueryTypes.SELECT, replacements })
     if (resultado.length === 0) return null
     return {
       ejercicio_id: resultado[0].ejercicio_id,

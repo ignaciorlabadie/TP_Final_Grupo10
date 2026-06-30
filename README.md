@@ -40,9 +40,9 @@ El desarrollo del proyecto se llevó a cabo utilizando un flujo de trabajo colab
 El backend está estructurado bajo el patrón MVC adaptado para APIs con Sequelize:
 
 - **/controllers**: Contiene la lógica principal de negocio. Funciones asíncronas que interactúan con los modelos de Sequelize para realizar operaciones CRUD y consultas agregadas.
-- **/models**: Definición de modelos usando Sequelize con TypeScript (Ejercicio, Rutina, Entrenamiento y sus tablas intermedias). Incluye interfaces y las relaciones (cardinalidades) entre entidades.
+- **/models**: Definición de modelos usando Sequelize con TypeScript (User, Ejercicio, Rutina, Entrenamiento y sus tablas intermedias). Incluye interfaces y las relaciones (cardinalidades) entre entidades.
 - **/routes**: Define los endpoints de la API y los asocia con sus respectivos middlewares y controladores.
-- **/middleware**: Validaciones de entrada (POST y PUT) para asegurar la integridad de los datos antes de que lleguen a los controladores, más un manejador global de errores y el middleware de autenticación JWT (pendiente).
+- **/middleware**: Validaciones de entrada (POST y PUT) para asegurar la integridad de los datos antes de que lleguen a los controladores, más un manejador global de errores y el middleware de autenticación JWT.
 - **/core**: Contiene la clase Server que inicializa la aplicación Express, conecta a la base de datos y registra los middlewares y rutas.
 - **/docs**: Contiene diagramas UML y E-R, junto con un archivo md explicandolo.
 - **/config**: Configuración de Sequelize para los entornos de desarrollo, test y producción.
@@ -117,17 +117,17 @@ docker compose exec backend npx sequelize-cli db:seed:undo:all
 
 ### 2. Modelos (Sequelize + TypeScript)
 
+- **UserModel**: Define la tabla `users` con campos `id`, `nombre`, `email` y `password`. Incluye métodos para registro, login, validación de contraseña (bcrypt) y generación de tokens JWT. Relación 1:N con rutinas y entrenamientos.
+
 - **EjercicioModel**: Define la tabla `ejercicios` con campos `id`, `nombre` y `tipo`. Métodos estáticos para CRUD y consultas específicas.
 
-- **RutinaModel**: Define la tabla `rutinas` con campos `id`, `nombre`, `descripcion` y `duracion_minutos`. Incluye en sus consultas los ejercicios asociados a través de la tabla intermedia.
+- **RutinaModel**: Define la tabla `rutinas` con campos `id`, `nombre`, `descripcion`, `duracion_minutos` y `user_id` (FK). Incluye en sus consultas los ejercicios asociados a través de la tabla intermedia y filtra por usuario autenticado.
 
 - **RutinaEjercicioModel**: Modelo intermedio (junction) que relaciona rutinas con ejercicios, agregando campos como `orden`, `series`, `repeticiones` y `descanso_segundos`.
 
-- **EntrenamientoModel**: Define la tabla `entrenamientos` con campos `id`, `rutina_id`, `fecha`, `duracion_real` y `notas`. Relacionado con ejercicios a través de la tabla intermedia.
+- **EntrenamientoModel**: Define la tabla `entrenamientos` con campos `id`, `rutina_id` (FK), `user_id` (FK), `fecha`, `duracion_real` y `notas`. Relacionado con ejercicios a través de la tabla intermedia y filtra por usuario autenticado.
 
 - **EntrenamientoEjercicioModel**: Modelo intermedio que registra el desempeño real en cada ejercicio durante un entrenamiento: `series_realizadas`, `repeticiones_realizadas` y `peso_usado`.
-
-- **user.model.js** (legacy / pendiente): Modelo de usuario para autenticación. Incompleto — contiene TODOs para hashear contraseñas con bcrypt y validar passwords que serán completados para entregar el dia 12/07.
 
 ### 3. Middlewares de Validación
 
@@ -145,13 +145,14 @@ docker compose exec backend npx sequelize-cli db:seed:undo:all
 
 ### Estructura de Tablas
 
-| Tabla                        | Campos principales                                                                                               | Relaciones                                      |
-| ---------------------------- | ---------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
-| **ejercicios**               | `id` (PK), `nombre`, `tipo`                                                                                      | M:M con rutinas, M:M con entrenamientos         |
-| **rutinas**                  | `id` (PK), `nombre`, `descripcion`, `duracion_minutos`                                                           | M:M con ejercicios, 1:M con entrenamientos      |
-| **rutina_ejercicios**        | `id`, `rutina_id` (FK), `ejercicio_id` (FK), `orden`, `series`, `repeticiones`, `descanso_segundos`              | Junction: pertenece a rutina y ejercicio        |
-| **entrenamientos**           | `id` (PK), `rutina_id` (FK), `fecha`, `duracion_real`, `notas`                                                   | Pertenece a rutina, M:M con ejercicios          |
-| **entrenamiento_ejercicios** | `id`, `entrenamiento_id` (FK), `ejercicio_id` (FK), `series_realizadas`, `repeticiones_realizadas`, `peso_usado` | Junction: pertenece a entrenamiento y ejercicio |
+| Tabla                        | Campos principales                                                                                               | Relaciones                                                       |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| **users**                    | `id` (PK), `nombre`, `email`, `password`                                                                         | 1:M con rutinas, 1:M con entrenamientos                          |
+| **ejercicios**               | `id` (PK), `nombre`, `tipo`                                                                                      | M:M con rutinas, M:M con entrenamientos                          |
+| **rutinas**                  | `id` (PK), `nombre`, `descripcion`, `duracion_minutos`, `user_id` (FK)                                           | M:M con ejercicios, 1:M con entrenamientos, pertenece a usuario  |
+| **rutina_ejercicios**        | `id`, `rutina_id` (FK), `ejercicio_id` (FK), `orden`, `series`, `repeticiones`, `descanso_segundos`              | Junction: pertenece a rutina y ejercicio                         |
+| **entrenamientos**           | `id` (PK), `rutina_id` (FK), `user_id` (FK), `fecha`, `duracion_real`, `notas`                                   | Pertenece a rutina, M:M con ejercicios, pertenece a usuario      |
+| **entrenamiento_ejercicios** | `id`, `entrenamiento_id` (FK), `ejercicio_id` (FK), `series_realizadas`, `repeticiones_realizadas`, `peso_usado` | Junction: pertenece a entrenamiento y ejercicio                  |
 
 --- 
 
@@ -175,45 +176,71 @@ docker compose exec backend npx sequelize-cli db:seed:undo:all
   <img src="frontend\src\assets\images\tabla_rutinas.png" alt="Diagrama ER" width="1000">
 </p>
 
+## Autenticación y Autorización
+
+La API utiliza **JWT (JSON Web Tokens)** para autenticación. Todos los endpoints protegidos requieren el header:
+
+```
+Authorization: Bearer <token>
+```
+
+**Flujo de autenticación:**
+
+1. **Registro** → `POST /api/auth/register` → crea usuario y devuelve token
+2. **Login** → `POST /api/auth/login` → valida credenciales y devuelve token
+3. **Perfil** → `GET /api/auth/perfil` → obtiene datos del usuario autenticado
+4. Usar el token en los headers de las peticiones a recursos protegidos
+
+**Aislamiento por usuario:** Cada usuario autenticado ve y opera solo sobre sus propias rutinas y entrenamientos. Un usuario no puede acceder a recursos de otro.
+
 ## Endpoints de la API
+
+### **Autenticación (/api/auth)**
+
+| Método | Ruta                   | Descripción                                      | Requiere Auth |
+| ------ | ---------------------- | ------------------------------------------------ | ------------- |
+| `POST` | `/api/auth/register`   | Registra un nuevo usuario (nombre, email, password) | No          |
+| `POST` | `/api/auth/login`      | Inicia sesión y devuelve token JWT               | No          |
+| `GET`  | `/api/auth/perfil`     | Obtiene datos del usuario autenticado            | Sí           |
+| `GET`  | `/api/auth/usuarios`   | Lista todos los usuarios                         | No           |
 
 ### **Ejercicios (/api/ejercicios)**
 
-| Método   | Ruta                           | Descripción                                         |
-| -------- | ------------------------------ | --------------------------------------------------- |
-| `GET`    | `/api/ejercicios`              | Lista completa de ejercicios                        |
-| `GET`    | `/api/ejercicios/count`        | Cantidad total de ejercicios                        |
-| `GET`    | `/api/ejercicios/tipo/:tipo`   | Ejercicios filtrados por tipo                       |
-| `GET`    | `/api/ejercicios/:id`          | Detalle de un ejercicio                             |
-| `GET`    | `/api/ejercicios/:id/progreso` | Historial de progreso de un ejercicio               |
-| `POST`   | `/api/ejercicios`              | Crea un nuevo ejercicio (Requiere: nombre, tipo)    |
-| `PUT`    | `/api/ejercicios/:id`          | Modifica un ejercicio existente                     |
-| `DELETE` | `/api/ejercicios/:id`          | Elimina un ejercicio (solo si no está referenciado) |
+| Método   | Ruta                           | Descripción                                         | Requiere Auth |
+| -------- | ------------------------------ | --------------------------------------------------- | ------------- |
+| `GET`    | `/api/ejercicios`              | Lista completa de ejercicios                        | Sí            |
+| `GET`    | `/api/ejercicios/count`        | Cantidad total de ejercicios                        | Sí            |
+| `GET`    | `/api/ejercicios/tipo/:tipo`   | Ejercicios filtrados por tipo                       | Sí            |
+| `GET`    | `/api/ejercicios/:id`          | Detalle de un ejercicio                             | Sí            |
+| `GET`    | `/api/ejercicios/:id/progreso` | Historial de progreso de un ejercicio               | Sí            |
+| `POST`   | `/api/ejercicios`              | Crea un nuevo ejercicio (Requiere: nombre, tipo)    | Sí            |
+| `PUT`    | `/api/ejercicios/:id`          | Modifica un ejercicio existente                     | Sí            |
+| `DELETE` | `/api/ejercicios/:id`          | Elimina un ejercicio (solo si no está referenciado) | Sí            |
 
 ### **Rutinas (/api/rutinas)**
 
-| Método   | Ruta               | Descripción                                                           |
-| -------- | ------------------ | --------------------------------------------------------------------- |
-| `GET`    | `/api/rutinas`     | Lista completa de rutinas (con ejercicios asociados)                  |
-| `GET`    | `/api/rutinas/:id` | Detalle de una rutina (con ejercicios asociados)                      |
-| `POST`   | `/api/rutinas`     | Crea una nueva rutina con ejercicios (Requiere: nombre, ejercicios[]) |
-| `PUT`    | `/api/rutinas/:id` | Modifica una rutina y reemplaza sus ejercicios                        |
-| `DELETE` | `/api/rutinas/:id` | Elimina una rutina (solo si no tiene entrenamientos asociados)        |
+| Método   | Ruta               | Descripción                                                           | Requiere Auth |
+| -------- | ------------------ | --------------------------------------------------------------------- | ------------- |
+| `GET`    | `/api/rutinas`     | Lista de rutinas del usuario autenticado (con ejercicios asociados)   | Sí            |
+| `GET`    | `/api/rutinas/:id` | Detalle de una rutina (con ejercicios asociados)                      | Sí            |
+| `POST`   | `/api/rutinas`     | Crea una nueva rutina con ejercicios (Requiere: nombre, ejercicios[]) | Sí            |
+| `PUT`    | `/api/rutinas/:id` | Modifica una rutina y reemplaza sus ejercicios                        | Sí            |
+| `DELETE` | `/api/rutinas/:id` | Elimina una rutina (solo si no tiene entrenamientos asociados)        | Sí            |
 
 ### **Entrenamientos (/api/entrenamientos)**
 
-| Método   | Ruta                      | Descripción                                                         |
-| -------- | ------------------------- | ------------------------------------------------------------------- |
-| `GET`    | `/api/entrenamientos`     | Lista completa de entrenamientos                                    |
-| `GET`    | `/api/entrenamientos/:id` | Detalle de un entrenamiento                                         |
-| `POST`   | `/api/entrenamientos`     | Registra un nuevo entrenamiento (Requiere: rutina_id, ejercicios[]) |
-| `DELETE` | `/api/entrenamientos/:id` | Elimina un entrenamiento                                            |
+| Método   | Ruta                      | Descripción                                                         | Requiere Auth |
+| -------- | ------------------------- | ------------------------------------------------------------------- | ------------- |
+| `GET`    | `/api/entrenamientos`     | Lista de entrenamientos del usuario autenticado                     | Sí            |
+| `GET`    | `/api/entrenamientos/:id` | Detalle de un entrenamiento                                         | Sí            |
+| `POST`   | `/api/entrenamientos`     | Registra un nuevo entrenamiento (Requiere: rutina_id, ejercicios[]) | Sí            |
+| `DELETE` | `/api/entrenamientos/:id` | Elimina un entrenamiento                                            | Sí            |
 
 ### **Estadísticas (/api/estadisticas)**
 
-| Método | Ruta                | Descripción                                                                            |
-| ------ | ------------------- | -------------------------------------------------------------------------------------- |
-| `GET`  | `/api/estadisticas` | Estadísticas generales (totales, promedios, ejercicio más frecuente, desglose mensual) |
+| Método | Ruta                | Descripción                                                                            | Requiere Auth |
+| ------ | ------------------- | -------------------------------------------------------------------------------------- | ------------- |
+| `GET`  | `/api/estadisticas` | Estadísticas del usuario autenticado (totales, promedios, ejercicio más frecuente, desglose mensual) | Sí            |
 
 ## **Validaciones y Manejo de Errores**
 
