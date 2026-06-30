@@ -5,7 +5,7 @@ const { RutinaModel } = require('../models/rutina.model');
 
 const getAllEntrenamientos = async (req, res, next) => {
   try {
-    const entrenamientos = await EntrenamientoModel.findAllEntrenamientos();
+    const entrenamientos = await EntrenamientoModel.findAllEntrenamientos(req.user.id);
 
     if (entrenamientos.length === 0) {
       return res.status(404).json({ msg: 'No se encontraron entrenamientos registrados' });
@@ -20,7 +20,7 @@ const getAllEntrenamientos = async (req, res, next) => {
 const getEntrenamientoById = async (req, res, next) => {
   const { id } = req.params;
   try {
-    const entrenamiento = await EntrenamientoModel.findById(Number(id));
+    const entrenamiento = await EntrenamientoModel.findById(Number(id), req.user.id);
 
     if (!entrenamiento) {
       return res.status(404).json({ msg: `No se encontró el entrenamiento con el id ${id}` });
@@ -43,6 +43,7 @@ const postNewEntrenamiento = async (req, res, next) => {
 
     const nuevoEntrenamiento = await EntrenamientoModel.createEntrenamiento({
       rutina_id,
+      user_id: req.user.id,
       fecha: fecha || new Date(),
       duracion_real,
       notas,
@@ -69,7 +70,7 @@ const postNewEntrenamiento = async (req, res, next) => {
     }));
     await EntrenamientoEjercicioModel.bulkCreate(ejerciciosData);
 
-    const entrenamientoCompleto = await EntrenamientoModel.findById(nuevoEntrenamiento.id);
+    const entrenamientoCompleto = await EntrenamientoModel.findById(nuevoEntrenamiento.id, req.user.id);
 
     return res.status(201).json({
       msg: 'Entrenamiento registrado correctamente',
@@ -87,7 +88,7 @@ const deleteEntrenamiento = async (req, res, next) => {
 
     await EntrenamientoEjercicioModel.destroy({ where: { entrenamiento_id: id } });
 
-    const deleted = await EntrenamientoModel.deleteEntrenamiento(Number(id));
+    const deleted = await EntrenamientoModel.deleteEntrenamiento(Number(id), req.user.id);
 
     if (!deleted) {
       return res.status(404).json({ msg: `No se encontró el entrenamiento con el id ${id}` });
