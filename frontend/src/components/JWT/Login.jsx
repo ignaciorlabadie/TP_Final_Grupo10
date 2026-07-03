@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { authService } from '../../services/authService';
+import { useAuth } from '../../hooks/AuthContext';
 import '../../styles/components/login.css';
 
 export const Login = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -14,8 +15,7 @@ export const Login = () => {
     setError('');
 
     try {
-      const datos = await authService.login(email, password);
-      localStorage.setItem('token', datos.token);
+      await login(email, password);
       navigate('/perfil');
     } catch (err) {
       setError(err.message);

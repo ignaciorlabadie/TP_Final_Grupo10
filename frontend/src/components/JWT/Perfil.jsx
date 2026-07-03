@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { authService } from '../../services/authService';
+import { useAuth } from '../../hooks/AuthContext';
 import '../../styles/components/perfil.css';
 
 export const Perfil = () => {
-  const navigate = useNavigate();
+  const { logout } = useAuth();
   const [usuario, setUsuario] = useState(null);
   const [error, setError] = useState('');
 
@@ -20,11 +21,6 @@ export const Perfil = () => {
 
     pedirPerfil();
   }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    navigate('/login');
-  };
 
   if (error) {
     return (
@@ -57,7 +53,7 @@ export const Perfil = () => {
       </p>
 
       <div className="perfil-actions">
-        <button onClick={handleLogout} className="btn-logout">
+        <button onClick={logout} className="btn-logout">
           Cerrar Sesión (Borrar Token)
         </button>
       </div>

@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { authService } from '../../services/authService';
+import { useAuth } from '../../hooks/AuthContext';
 import '../../styles/components/register.css';
 
 export const Register = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [nombre, setNombre] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -16,9 +18,8 @@ export const Register = () => {
     setError('');
 
     try {
-      const datos = await authService.register(nombre, email, password);
-      // Guardamos el token para que ya quede logueado al registrarse
-      localStorage.setItem('token', datos.token);
+      await authService.register(nombre, email, password);
+      await login(email, password);
       setExito(true);
 
       setTimeout(() => {
