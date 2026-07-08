@@ -1,0 +1,30 @@
+.usuarios-container {
+  max-width: 700px;
+  margin: 30px auto;
+  padding: 20px;
+  background: #fff;
+  border: 1px solid #ddd;
+}
+
+.usuarios-error {
+  background: #ffe0e0;
+  color: #c00;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.usuarios-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.usuarios-table th,
+.usuarios-table td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.usuarios-table th {
+  background: #f1f1f1;
+}
