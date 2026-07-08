@@ -1,0 +1,124 @@
+.gestion-container {
+  background: #fff;
+  padding: 20px;
+  margin: 20px 0;
+  border: 1px solid #ddd;
+}
+
+.gestion-form {
+  background: #f9f9f9;
+  padding: 15px;
+  margin-bottom: 20px;
+  border: 1px solid #eee;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.form-grid input,
+.form-grid select {
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+}
+
+.btn-submit {
+  padding: 8px 16px;
+  cursor: pointer;
+  border: none;
+  color: #fff;
+  margin-right: 5px;
+}
+
+.btn-submit.registrar { background: #28a745; }
+.btn-submit.editar { background: #ffc107; color: #333; }
+
+.btn-cancelar {
+  padding: 8px 16px;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  background: #fff;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+th {
+  background: #f1f1f1;
+}
+
+.error-mensaje {
+  background: #ffe0e0;
+  color: #c00;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.error-campo {
+  color: #c00;
+  font-size: 0.8rem;
+  display: block;
+  margin-top: 2px;
+}
+
+.tabla-no-data {
+  text-align: center;
+  color: #999;
+  padding: 20px;
+  font-style: italic;
+}
+
+.btn-accion {
+  padding: 4px 10px;
+  cursor: pointer;
+  border: none;
+  margin-right: 4px;
+}
+
+.btn-accion.btn-editar { background: #ffc107; color: #333; }
+.btn-accion.btn-eliminar { background: #dc3545; color: #fff; }
+
+.ejercicio-row-card {
+  background: #f9f9f9;
+  border: 1px solid #eee;
+  padding: 12px;
+  margin-bottom: 10px;
+}
+
+.ejercicio-row-card label {
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.ejercicio-row-card label input {
+  display: block;
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  margin-top: 2px;
+}
+
+.form-grid label {
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.form-grid label input,
+.form-grid label select {
+  display: block;
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  margin-top: 2px;
+}
