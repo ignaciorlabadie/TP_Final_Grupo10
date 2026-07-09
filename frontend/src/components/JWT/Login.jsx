@@ -9,16 +9,20 @@ export const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
 
     try {
       await login(email, password);
       navigate('/perfil');
     } catch (err) {
       setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -50,8 +54,8 @@ export const Login = () => {
           />
         </div>
 
-        <button type="submit" className="btn-submit">
-          Ingresar
+        <button type="submit" className="btn-submit" disabled={loading}>
+          {loading ? 'Ingresando...' : 'Ingresar'}
         </button>
       </form>
 
