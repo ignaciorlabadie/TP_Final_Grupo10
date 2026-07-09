@@ -84,4 +84,49 @@ export const ejercicioService = {
 
     return datos;
   },
+
+  getCount: async () => {
+    const respuesta = await fetch(`${API_URL}/ejercicios/count`, {
+      method: 'GET',
+      headers: getHeaders(),
+    });
+
+    const datos = await respuesta.json();
+
+    if (!respuesta.ok) {
+      throw new Error(datos.msg || 'Error al obtener el conteo');
+    }
+
+    return datos;
+  },
+
+  getByTipo: async (tipo) => {
+    const respuesta = await fetch(`${API_URL}/ejercicios/tipo/${tipo}`, {
+      method: 'GET',
+      headers: getHeaders(),
+    });
+
+    const datos = await respuesta.json();
+
+    if (!respuesta.ok) {
+      throw new Error(datos.msg || 'Error al filtrar ejercicios');
+    }
+
+    return datos;
+  },
+
+  getProgreso: async (id) => {
+    const respuesta = await fetch(`${API_URL}/ejercicios/${id}/progreso`, {
+      method: 'GET',
+      headers: getHeaders(),
+    });
+
+    const datos = await respuesta.json();
+
+    if (!respuesta.ok) {
+      throw new Error(datos.msg || 'Error al obtener el progreso');
+    }
+
+    return datos;
+  },
 };
