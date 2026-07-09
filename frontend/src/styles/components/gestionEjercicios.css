@@ -98,3 +98,61 @@ th {
 
 .btn-accion.btn-editar { background: #ffc107; color: #333; }
 .btn-accion.btn-eliminar { background: #dc3545; color: #fff; }
+.btn-accion.btn-progreso { background: #17a2b8; color: #fff; }
+
+.total-badge {
+  background: #e8f5e9;
+  color: #2e7d32;
+  padding: 8px 14px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.filtros-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.filtro-tab {
+  padding: 6px 16px;
+  border: 1px solid #ccc;
+  background: #f5f5f5;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.filtro-tab.activo {
+  background: #007bff;
+  color: #fff;
+  border-color: #007bff;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-contenido {
+  background: #fff;
+  padding: 24px;
+  border-radius: 8px;
+  min-width: 500px;
+  max-width: 700px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.modal-contenido h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+}
