@@ -41,7 +41,7 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/perfil" element={<PrivateRoute><Perfil /></PrivateRoute>} />
-              <Route path="/usuarios" element={<PrivateRoute><ListaUsuarios /></PrivateRoute>} />
+              <Route path="/usuarios" element={<ListaUsuarios />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </div>

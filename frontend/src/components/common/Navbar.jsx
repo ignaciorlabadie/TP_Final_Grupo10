@@ -21,6 +21,7 @@ export const Navbar = () => {
             <li><Link to="/usuarios">Usuarios</Link></li>
           </>
         )}
+        <li><Link to="/usuarios">Usuarios</Link></li>
         {!isAuthenticated ? (
           <>
             <li><Link to="/register">Registrarse</Link></li>

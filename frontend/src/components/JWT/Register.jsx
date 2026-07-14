@@ -11,11 +11,13 @@ export const Register = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const [exito, setExito] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
 
     try {
       await authService.register(nombre, email, password);
@@ -27,6 +29,8 @@ export const Register = () => {
       }, 2000);
     } catch (err) {
       setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -76,8 +80,8 @@ export const Register = () => {
           />
         </div>
 
-        <button type="submit" className="btn-submit">
-          Registrar Cuenta
+        <button type="submit" className="btn-submit" disabled={loading}>
+          {loading ? 'Registrando...' : 'Registrar Cuenta'}
         </button>
       </form>
 
