@@ -176,6 +176,12 @@ docker compose exec backend npx sequelize-cli db:seed:undo:all
   <img src="frontend\src\assets\images\tabla_rutinas.png" alt="Diagrama ER" width="1000">
 </p>
 
+- Tabla **users**
+
+<p align="center">
+  <img src="frontend\src\assets\images\tabla_users.png" alt="Diagrama ER" width="1000">
+</p>
+
 ## Autenticación y Autorización
 
 La API utiliza **JWT (JSON Web Tokens)** para autenticación. Todos los endpoints protegidos requieren el header:
