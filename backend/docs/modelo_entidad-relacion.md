@@ -17,7 +17,7 @@ Hay 2 "entidades intermedias" o enidades relacionales, que surgen de las distint
 
 ---
 ## Relaciones: 
-Hay cuatro relaciones distintas en este modelo ER:
+Hay cinco relaciones distintas en este modelo ER:
 1. Rutinas - Ejercicios, relación muchos a muchos (M:N). Una rutina contiene muchos ejercicios. Un ejercicio aparece en muchas rutinas.
 
 2. Entrenamientos - Ejercicios, relación muchos a muchos (M:N). Un entrenamiento registra muchos ejercicios. Un ejercicio se registra en muchos entrenamientos.
@@ -25,3 +25,5 @@ Hay cuatro relaciones distintas en este modelo ER:
 3. Rutinas - Entrenamientos, relación uno a muchos (1:N). Una rutina puede tener muchos entrenamientos asociados, pero un entrenamiento pertenece a una sola rutina.
 
 4. Rutinas - Usuarios, relación uno a muchos (1:N). Un usuario tiene muchas rutinas, y cada rutina pertenece a un solo usuario.
+
+5. Entrenamientos - Usuarios, relación uno a muchos (1:N). Un usuario realiza muchos entrenamientos, y cada entrenamiento pertenece a un solo usuario.
