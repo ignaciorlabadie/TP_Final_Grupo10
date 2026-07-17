@@ -18,7 +18,6 @@ export const Navbar = () => {
             <li><Link to="/rutinas">Rutinas</Link></li>
             <li><Link to="/entrenamientos">Entrenamientos</Link></li>
             <li><Link to="/estadisticas">Estadísticas</Link></li>
-            <li><Link to="/usuarios">Usuarios</Link></li>
           </>
         )}
         <li><Link to="/usuarios">Usuarios</Link></li>

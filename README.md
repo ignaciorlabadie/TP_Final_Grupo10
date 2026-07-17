@@ -28,12 +28,89 @@ El desarrollo del proyecto se llevó a cabo utilizando un flujo de trabajo colab
 
 ## Tecnologías Utilizadas
 
+### Backend
+
 - **Entorno de ejecución**: Node.js
 - **Framework web**: Express.js
 - **ORM**: Sequelize 6.x
 - **Base de datos**: PostgreSQL 15
 - **Lenguajes**: JavaScript y TypeScript (Modelos)
+
+### Frontend
+
+- **Framework UI**: React 18
+- **Enrutamiento**: React Router DOM v6
+- **Estilos**: CSS personalizado
+- **HTTP Client**: Fetch API nativa
+
+### Infraestructura
+
 - **Contenedores**: Docker + Docker Compose
+
+## Frontend (React)
+
+Cliente web SPA (Single Page Application) desarrollado en React 18 que consume la API REST del backend. Implementa autenticación JWT, rutas protegidas y formularios controlados para la gestión completa de ejercicios, rutinas, entrenamientos y estadísticas. Se comunica con el backend mediante fetch nativo.
+
+### Distribución de archivos del Frontend
+
+- **/pages**: Página principal (HomePage).
+- **/components/common**: Componentes de UI compartidos: gestión de ejercicios, rutinas, entrenamientos, estadísticas, barra de navegación (Navbar), pie de página (Footer), ruta privada (PrivateRoute) y página 404.
+- **/components/JWT**: Componentes de autenticación: Login, Register, Perfil y ListaUsuarios.
+- **/services**: Módulos de comunicación con la API (authService, ejercicioService, rutinaService, entrenamientoService, estadisticasService). Cada servicio encapsula las llamadas fetch con token JWT en los headers.
+- **/hooks**: AuthContext - Proveedor de contexto React que gestiona el estado de autenticación (token, usuario, login/logout).
+- **/styles**: Archivos CSS organizados por componente.
+- **/assets**: Imágenes estáticas.
+
+### Componentes Principales
+
+| Componente | Archivo | Descripción |
+| --- | --- | --- |
+| **GestionEjercicios** | components/common/GestionEjercicios.jsx | CRUD completo de ejercicios con filtrado por tipo, conteo total y visualización de progreso por ejercicio. |
+| **GestionRutinas** | components/common/GestionRutinas.jsx | CRUD de rutinas con selección de ejercicios, configuración de series/repeticiones/descanso y edición de ejercicios asociados. |
+| **GestionEntrenamientos** | components/common/GestionEntrenamientos.jsx | Registro de entrenamientos vinculados a rutinas, con carga de ejercicios y registro de desempeño (series, repeticiones, peso). |
+| **GestionEstadisticas** | components/common/GestionEstadisticas.jsx | Dashboard de estadísticas: totales, promedios, ejercicio más frecuente y desglose mensual. |
+| **Login** | components/JWT/Login.jsx | Formulario de inicio de sesión con manejo de errores y redirección. |
+| **Register** | components/JWT/Register.jsx | Formulario de registro de nuevos usuarios. |
+| **Perfil** | components/JWT/Perfil.jsx | Muestra datos del usuario autenticado. |
+| **ListaUsuarios** | components/JWT/ListaUsuarios.jsx | Listado de todos los usuarios registrados. |
+| **Navbar** | components/common/Navbar.jsx | Barra de navegación con links condicionales según estado de autenticación. |
+| **PrivateRoute** | components/common/PrivateRoute.jsx | Componente wrapper que redirige a /login si el usuario no está autenticado. |
+| **NotFound** | components/common/NotFound.jsx | Página 404 personalizada. |
+
+### Servicios (API Client)
+
+| Servicio | Archivo | Endpoints que consume |
+| --- | --- | --- |
+| **authService** | services/authService.js | POST /api/auth/register, POST /api/auth/login, GET /api/auth/perfil, GET /api/auth/usuarios |
+| **ejercicioService** | services/ejercicioService.js | GET/POST/PUT/DELETE /api/ejercicios, GET /api/ejercicios/count, GET /api/ejercicios/tipo/:tipo, GET /api/ejercicios/:id/progreso |
+| **rutinaService** | services/rutinaService.js | GET/POST/PUT/DELETE /api/rutinas |
+| **entrenamientoService** | services/entrenamientoService.js | GET/POST/DELETE /api/entrenamientos |
+| **estadisticasService** | services/estadisticasService.js | GET /api/estadisticas |
+
+### Autenticación en el Frontend
+
+El frontend gestiona la autenticación mediante un **AuthContext** (React Context) que:
+
+1. Almacena el token JWT en `localStorage` del navegador.
+2. Decodifica el payload del token para extraer datos del usuario (sin dependencias externas, usando `atob`).
+3. Expone `login()`, `logout()`, `token`, `user` e `isAuthenticated` a través del hook `useAuth()`.
+4. El componente **PrivateRoute** protege las rutas verificando `isAuthenticated`, redirigiendo a `/login` si no hay sesión activa.
+5. Cada servicio agrega el header `Authorization: Bearer <token>` automáticamente en cada petición.
+
+### Rutas del Frontend
+
+| Ruta | Componente | Requiere Auth |
+| --- | --- | --- |
+| `/` | HomePage | No |
+| `/login` | Login | No |
+| `/register` | Register | No |
+| `/usuarios` | ListaUsuarios | No |
+| `/ejercicios` | GestionEjercicios | Sí |
+| `/rutinas` | GestionRutinas | Sí |
+| `/entrenamientos` | GestionEntrenamientos | Sí |
+| `/estadisticas` | GestionEstadisticas | Sí |
+| `/perfil` | Perfil | Sí |
+| `*` | NotFound | No |
 
 ## Distribución de los archivos y carpetas
 
@@ -49,7 +126,6 @@ El backend está estructurado bajo el patrón MVC adaptado para APIs con Sequeli
 - **/migrations**
 - **/seeders**
 - **/tests**
-- **/utils**
 
 ## Migraciones y Seeders
 
@@ -92,6 +168,28 @@ docker compose exec backend npx sequelize-cli db:seed:undo:all
 ```
 
 > En Render + Neon las tablas ya existen, por lo que no es necesario ejecutar migraciones ni seeders.
+
+## Ejecución del Frontend
+
+### Con Docker (desarrollo completo)
+
+Levantar todo el stack (backend + frontend + base de datos + redis):
+```
+docker compose up -d
+```
+
+El frontend estará disponible en `http://localhost:3000`.
+
+### Local (solo frontend)
+
+Si ya tenés el backend corriendo por separado:
+```
+cd frontend
+npm install
+npm start
+```
+
+El frontend estará disponible en `http://localhost:3000`.
 
 ## **Explicación de las Funciones**
 
@@ -261,6 +359,10 @@ El proyecto cuenta con middlewares específicos para cada entidad que intercepta
 ## **Link de render**
 
 https://tp-final-grupo10.onrender.com
+
+## **Link de netlify (Frontend)**
+
+https://tp-final-grupo10.netlify.app
 
 ## **Link de documentación de postman**
 
