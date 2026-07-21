@@ -14,8 +14,6 @@ Esta es una API REST desarrollada como backend para un sistema de gestión de en
 
 La lógica de negocio está implementada en controladores que gestionan las operaciones CRUD, mientras que los modelos en TypeScript definen la estructura de datos y las relaciones entre entidades. El proyecto está dockerizado y orquestado con Docker Compose junto con un frontend en React, una base de datos PostgreSQL, Redis para caché y Caddy como reverse proxy.
 
-> **Nota:** Algunos archivos y funcionalidades se encuentran sin uso o incompletos porque serán completados y utilizados en una entrega posterior.
-
 ## Metodología de trabajo con Git y GitHub
 
 El desarrollo del proyecto se llevó a cabo utilizando un flujo de trabajo colaborativo basado en ramas (Branching):
