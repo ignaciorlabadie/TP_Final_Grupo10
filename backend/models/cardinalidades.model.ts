@@ -1,14 +1,18 @@
 import { sequelize } from '.';
+import { UserModel } from './user.model'
 import { EjercicioModel } from './ejercicio.model'
 import { RutinaModel } from './rutina.model'
 import { RutinaEjercicioModel } from './rutina_ejercicio.model'
 import { EntrenamientoModel } from './entrenamiento.model'
 import { EntrenamientoEjercicioModel } from './entrenamiento_ejercicio.model'
 
-// const UserModel = require('./user.model');
-// const User = UserModel(sequelize);
-
 export const establecerCardinalidad = (): void => {
+  UserModel.hasMany(RutinaModel, { foreignKey: 'user_id' });
+  RutinaModel.belongsTo(UserModel, { foreignKey: 'user_id' });
+
+  UserModel.hasMany(EntrenamientoModel, { foreignKey: 'user_id' });
+  EntrenamientoModel.belongsTo(UserModel, { foreignKey: 'user_id' });
+
   RutinaModel.belongsToMany(EjercicioModel, {
     through: RutinaEjercicioModel,
     foreignKey: 'rutina_id',

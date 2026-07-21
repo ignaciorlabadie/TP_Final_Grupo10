@@ -11,14 +11,18 @@ export class EntrenamientoModel
 {
   declare id: number
   declare rutina_id: number
+  declare user_id: number
   declare fecha: Date
   declare duracion_real: number | undefined
   declare notas: string | undefined
   declare readonly createdAt: Date
   declare readonly updatedAt: Date
 
-  static async findAllEntrenamientos(): Promise<EntrenamientoModel[]> {
+  static async findAllEntrenamientos(userId?: number): Promise<EntrenamientoModel[]> {
+    const where: any = {}
+    if (userId) where.user_id = userId
     return await EntrenamientoModel.findAll({
+      where,
       include: [{
         model: EjercicioModel,
         through: { attributes: ['series_realizadas', 'repeticiones_realizadas', 'peso_usado'] },
@@ -27,8 +31,11 @@ export class EntrenamientoModel
     })
   }
 
-  static async findById(id: number): Promise<EntrenamientoModel | null> {
-    return await EntrenamientoModel.findByPk(id, {
+  static async findById(id: number, userId?: number): Promise<EntrenamientoModel | null> {
+    const where: any = { id }
+    if (userId) where.user_id = userId
+    return await EntrenamientoModel.findOne({
+      where,
       include: [{
         model: EjercicioModel,
         through: { attributes: ['series_realizadas', 'repeticiones_realizadas', 'peso_usado'] },
@@ -40,21 +47,27 @@ export class EntrenamientoModel
     return await EntrenamientoModel.create(input)
   }
 
-  static async updateEntrenamiento(id: number, data: Partial<EntrenamientoCreationAttributes>): Promise<EntrenamientoModel | null> {
-    const entrenamiento = await this.findByPk(id)
+  static async updateEntrenamiento(id: number, data: Partial<EntrenamientoCreationAttributes>, userId?: number): Promise<EntrenamientoModel | null> {
+    const where: any = { id }
+    if (userId) where.user_id = userId
+    const entrenamiento = await EntrenamientoModel.findOne({ where })
     if (!entrenamiento) return null
     return await entrenamiento.update(data)
   }
 
-  static async deleteEntrenamiento(id: number): Promise<boolean> {
-    const entrenamiento = await this.findByPk(id)
+  static async deleteEntrenamiento(id: number, userId?: number): Promise<boolean> {
+    const where: any = { id }
+    if (userId) where.user_id = userId
+    const entrenamiento = await EntrenamientoModel.findOne({ where })
     if (!entrenamiento) return false
     await entrenamiento.destroy()
     return true
   }
 
-  static async countEntrenamientos(): Promise<number> {
-    return await this.count()
+  static async countEntrenamientos(userId?: number): Promise<number> {
+    const where: any = {}
+    if (userId) where.user_id = userId
+    return await this.count({ where })
   }
 
   static async findLastEntrenamiento(): Promise<EntrenamientoModel | null> {
@@ -72,6 +85,10 @@ EntrenamientoModel.init(
       autoIncrement: true
     },
     rutina_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    user_id: {
       type: DataTypes.INTEGER,
       allowNull: false
     },

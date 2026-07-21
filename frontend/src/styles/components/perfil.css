@@ -1,0 +1,40 @@
+.perfil-container {
+  max-width: 500px;
+  margin: 30px auto;
+  padding: 20px;
+  background: #fff;
+  border: 1px solid #ddd;
+}
+
+.perfil-title {
+  text-align: center;
+}
+
+.perfil-actions {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.btn-logout {
+  padding: 8px 20px;
+  background: #dc3545;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+.perfil-error {
+  max-width: 400px;
+  margin: 30px auto;
+  padding: 20px;
+  background: #fff;
+  border: 1px solid #ddd;
+  text-align: center;
+}
+
+.perfil-loading {
+  text-align: center;
+  padding: 40px;
+  color: #999;
+  font-style: italic;
+}

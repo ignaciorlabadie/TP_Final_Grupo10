@@ -6,16 +6,19 @@ const { QueryTypes } = require('sequelize');
 
 const getEstadisticas = async (req, res, next) => {
   try {
-    const totalEntrenamientos = await EntrenamientoModel.countEntrenamientos();
+    const userId = req.user.id;
 
-    const tiempoTotal = await EntrenamientoModel.sum('duracion_real');
+    const totalEntrenamientos = await EntrenamientoModel.countEntrenamientos(userId);
+
+    const tiempoTotal = await EntrenamientoModel.sum('duracion_real', { where: { user_id: userId } });
 
     const promedioDuracion = await EntrenamientoModel.findOne({
       attributes: [[sequelize.fn('AVG', sequelize.col('duracion_real')), 'promedio']],
+      where: { user_id: userId },
       raw: true,
     });
 
-    const ejercicioMasFrecuente = await EntrenamientoEjercicioModel.findEjercicioMasFrecuente();
+    const ejercicioMasFrecuente = await EntrenamientoEjercicioModel.findEjercicioMasFrecuente(userId);
 
     const entrenamientosPorMes = await sequelize.query(
       `SELECT
@@ -23,9 +26,10 @@ const getEstadisticas = async (req, res, next) => {
         COUNT(*) AS total,
         COALESCE(SUM(duracion_real), 0) AS tiempo_total
       FROM entrenamientos
+      WHERE user_id = :userId
       GROUP BY TO_CHAR(fecha, 'YYYY-MM')
       ORDER BY mes DESC`,
-      { type: QueryTypes.SELECT }
+      { type: QueryTypes.SELECT, replacements: { userId } }
     );
 
     return res.status(200).json({

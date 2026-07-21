@@ -3,6 +3,7 @@ export interface InterfaceRutina {
   nombre: string;
   descripcion?: string;
   duracion_minutos?: number;
+  user_id: number;
 }
 
 
